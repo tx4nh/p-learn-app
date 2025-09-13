@@ -4,7 +4,7 @@
 2. cd <project-folder>
 3. flutter pub get
 4. flutter run
-*: Cần có Flutter SDK, Android Studio(androind) / Xcode(IOS), Emulator
+*: Cần có Flutter SDK, Android Studio(Android) / Xcode(IOS), Emulator
 ```
 
 ## Cấu trúc tổng quát
