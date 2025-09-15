@@ -23,7 +23,6 @@ lib/
 │   ├── user.dart
 │   ├── course.dart
 │   ├── assignment.dart
-│   ├── study_group.dart
 │   ├── grade.dart
 │   ├── api_response.dart
 │   └── notification.dart
@@ -38,7 +37,6 @@ lib/
 │   ├── user_repository.dart
 │   ├── course_repository.dart
 │   ├── assignment_repository.dart
-│   ├── study_group_repository.dart
 │   └── base_repository.dart
 ├── services/
 │   ├── storage_service.dart
@@ -71,17 +69,12 @@ lib/
 │   │   ├── profile_screen.dart
 │   │   ├── edit_profile_screen.dart
 │   │   └── settings_screen.dart
-│   ├── tools/
-│   │   ├── tools_screen.dart
-│   │   ├── gpa_calculator_screen.dart
-│   │   ├── pomodoro_screen.dart
-│   │   ├── study_planner_screen.dart
-│   │   └── ai_chat_screen.dart
-│   └── community/
-│       ├── study_groups_screen.dart
-│       ├── group_detail_screen.dart
-│       ├── create_group_screen.dart
-│       └── join_group_screen.dart
+│   └── tools/
+│       ├── tools_screen.dart
+│       ├── gpa_calculator_screen.dart
+│       ├── pomodoro_screen.dart
+│       ├── study_planner_screen.dart
+│       └── ai_chat_screen.dart
 ├── widgets/
 │   ├── course_card.dart
 │   ├── assignment_tile.dart
