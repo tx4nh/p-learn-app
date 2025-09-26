@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-// import 'package:provider/provider.dart';
+import 'package:provider/provider.dart';
 import 'register_screen.dart';
-// import '../../services/auth_service.dart';
+import '../../services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -31,44 +31,45 @@ class _LoginScreenState extends State<LoginScreen> {
         _isLoading = true;
       });
 
-      // try {
-      //   final authService = context.read<AuthService>();
-      //   final success = await authService.login(
-      //     _emailController.text.trim(),
-      //     _passwordController.text,
-      //   );
+      try {
+        final authService = Provider.of<AuthService>(context, listen: false);
+        final success = await authService.login(
+          _emailController.text.trim(),
+          _passwordController.text,
+        );
 
-      //   if (success && mounted) {
-      //     ScaffoldMessenger.of(context).showSnackBar(
-      //       const SnackBar(
-      //         content: Text('Đăng nhập thành công!'),
-      //         backgroundColor: Colors.green,
-      //       ),
-      //     );
-      //   } else if (mounted) {
-      //     ScaffoldMessenger.of(context).showSnackBar(
-      //       const SnackBar(
-      //         content: Text('Email hoặc mật khẩu không đúng'),
-      //         backgroundColor: Colors.red,
-      //       ),
-      //     );
-      //   }
-      // } catch (e) {
-      //   if (mounted) {
-      //     ScaffoldMessenger.of(context).showSnackBar(
-      //       const SnackBar(
-      //         content: Text('Đã xảy ra lỗi. Vui lòng thử lại.'),
-      //         backgroundColor: Colors.red,
-      //       ),
-      //     );
-      //   }
-      // } finally {
-      //   if (mounted) {
-      //     setState(() {
-      //       _isLoading = false;
-      //     });
-      //   }
-      // }
+        if (success && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Đăng nhập thành công!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } else if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Email hoặc mật khẩu không đúng'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              // Quan trọng: Bỏ "const" ở đây
+              content: Text('Lỗi: ${e.toString()}'), // <-- Hiển thị lỗi cụ thể
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
     }
   }
 
@@ -230,7 +231,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 24),
 
                     ElevatedButton(
-                      onPressed: _isLoading ? null : _handleLogin,
+                      onPressed: _isLoading
+                          ? null
+                          : () {
+                              _handleLogin();
+                            },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: _colorLogin,
                         foregroundColor: Colors.white,
