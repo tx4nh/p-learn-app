@@ -57,8 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              // Quan trọng: Bỏ "const" ở đây
-              content: Text('Lỗi: ${e.toString()}'), // <-- Hiển thị lỗi cụ thể
+              content: Text('Lỗi: ${e.toString()}'),
               backgroundColor: Colors.red,
             ),
           );
