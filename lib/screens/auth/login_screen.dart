@@ -38,14 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
           _passwordController.text,
         );
 
-        if (success && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Đăng nhập thành công!'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        } else if (mounted) {
+        if (!success && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Email hoặc mật khẩu không đúng'),

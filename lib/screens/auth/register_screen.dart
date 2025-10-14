@@ -13,7 +13,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordController = TextEditingController();
   final TextEditingController _majorController = TextEditingController();
   bool _isPasswordVisible = false;
-  bool _isLoading = false;
+  final bool _isLoading = false;
   final _colorRegister = Color.fromARGB(184, 244, 12, 12);
 
   Future<void> _handleRegister() async {}
@@ -50,6 +50,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,

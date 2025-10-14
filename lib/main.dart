@@ -1,11 +1,11 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:p_learn_app/screens/auth/login_screen.dart';
+import 'package:p_learn_app/screens/auth_gate.dart';
+import 'package:p_learn_app/services/auth_service.dart';
 import 'package:provider/provider.dart';
-import '../services/auth_service.dart'; 
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   runApp(const MainApp());
 }
@@ -19,7 +19,7 @@ class MainApp extends StatelessWidget {
       create: (_) => AuthService(),
       child: const MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: LoginScreen(),
+        home: AuthGate(),
       ),
     );
   }
