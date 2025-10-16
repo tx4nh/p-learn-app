@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:p_learn_app/screens/home/home_screen.dart';
 import 'package:provider/provider.dart';
 import 'register_screen.dart';
 import '../../services/auth_service.dart';
@@ -37,6 +38,15 @@ class _LoginScreenState extends State<LoginScreen> {
           _emailController.text.trim(),
           _passwordController.text,
         );
+
+       if (success && mounted) {
+        // Chuyển đến HomeScreen và xóa màn hình đăng nhập khỏi stack
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()), // Giả sử tên màn hình của bạn là HomeScreen
+        );
+        return; // Thoát khỏi hàm sau khi điều hướng thành công
+      }
 
         if (!success && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

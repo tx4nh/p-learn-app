@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:p_learn_app/screens/auth_gate.dart';
+import 'package:p_learn_app/screens/auth/auth_wrapper.dart';
 import 'package:p_learn_app/services/auth_service.dart';
 import 'package:provider/provider.dart';
 
@@ -19,7 +19,7 @@ class MainApp extends StatelessWidget {
       create: (_) => AuthService(),
       child: const MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: AuthGate(),
+        home: AuthWrapper(),
       ),
     );
   }
