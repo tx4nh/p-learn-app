@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:p_learn_app/screens/auth/login_screen.dart';
-import 'package:p_learn_app/screens/home/home_screen.dart';
+import 'package:p_learn_app/screens/main_navigation/main_tab_screen.dart';
 import 'package:p_learn_app/services/auth_service.dart';
 import 'package:provider/provider.dart';
 
@@ -15,7 +15,6 @@ class _AuthWrapperState extends State<AuthWrapper> {
   @override
   void initState() {
     super.initState();
-    // Check authentication status when app starts
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AuthService>().checkAuthStatus();
     });
@@ -25,8 +24,8 @@ class _AuthWrapperState extends State<AuthWrapper> {
   Widget build(BuildContext context) {
     return Consumer<AuthService>(
       builder: (context, authService, child) {
-        if (authService.isLoggedIn) {
-          return const HomeScreen();
+        if (!authService.isLoggedIn) {
+          return const MainTabScreen();
         } else {
           return const LoginScreen();
         }
