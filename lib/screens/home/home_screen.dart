@@ -56,12 +56,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context, listen: false);
-    final userEmail = authService.currentUserEmail ?? 'Không có email';
-    final userName = userEmail.split('@').first;
+    final userId = authService.currentUserEmail ?? 'Không có mã SV';
+    final uId = userId.substring(userId.length - 3);
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: _buildAppBar(userName, userEmail),
+      appBar: _buildAppBar(userId, uId),
       body: RefreshIndicator(
         onRefresh: _loadSchedule,
         child: SingleChildScrollView(
@@ -82,18 +82,18 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  PreferredSizeWidget _buildAppBar(String userName, String userEmail) {
+  PreferredSizeWidget _buildAppBar(String userId, String uId) {
     return AppBar(
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Xin chào, $userName!',
+            'Xin chào, PTITer $uId!',
             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 2),
           Text(
-            'Mã Sinh Viên: $userEmail',
+            'Mã Sinh Viên: $userId',
             style: TextStyle(fontSize: 15, color: Colors.grey.shade600),
           ),
         ],
