@@ -39,13 +39,12 @@ class _LoginScreenState extends State<LoginScreen> {
           _passwordController.text,
         );
 
-       if (success && mounted) {
-        // Chuyển đến HomeScreen và xóa màn hình đăng nhập khỏi stack
+        if (success && mounted) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const HomeScreen()), // Giả sử tên màn hình của bạn là HomeScreen
         );
-        return; // Thoát khỏi hàm sau khi điều hướng thành công
+        return;
       }
 
         if (!success && mounted) {

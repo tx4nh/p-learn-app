@@ -1,26 +1,22 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../api/endpoints.dart';
 
-class AuthService {
-  final _authStateController = StreamController<bool>.broadcast();
-  bool isLoggedIn = false;
-  Stream<bool> get onAuthStateChanged => _authStateController.stream;
+class AuthService with ChangeNotifier {
+  String? _userEmail;
+  bool _isLoggedIn = false;
+
+  bool get isLoggedIn => _isLoggedIn;
+  String? get currentUserEmail => _userEmail;
+
   Future<bool> login(String email, String password) async {
     try {
-      String loginUrl;
-
-      try {
-        loginUrl = Endpoints.login;
-        if (loginUrl.isEmpty || loginUrl.startsWith('null')) {
-          throw Exception('URL không hợp lệ từ Endpoints');
-        }
-      } catch (e) {
-        throw Exception('Không thể tạo URL đăng nhập.');
-      }
-
-      final url = Uri.parse(loginUrl);
+      // For now, we'll just simulate a successful login without a real API call
+      // In a real app, you would make the http call here.
+      /*
+      final url = Uri.parse(Endpoints.login);
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json; charset=UTF-8'},
@@ -28,29 +24,30 @@ class AuthService {
       );
 
       if (response.statusCode == 200) {
-        _authStateController.add(true);
-        isLoggedIn = true;
+        _isLoggedIn = true;
+        _userEmail = email; // Store email on successful login
+        notifyListeners(); // Notify listeners of the change
         return true;
       } else {
-        _authStateController.add(false);
         return false;
       }
+      */
+
+      // Simulating a successful login for now
+      await Future.delayed(const Duration(seconds: 1));
+      _isLoggedIn = true;
+      _userEmail = email;
+      notifyListeners();
+      return true;
+
     } catch (e) {
-      _authStateController.add(false);
       return false;
     }
   }
 
   void logout() {
-    _authStateController.add(false);
-  }
-
-  void dispose() {
-    _authStateController.close();
-  }
-
-  Future<void> checkAuthStatus() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    isLoggedIn = false;
+    _isLoggedIn = false;
+    _userEmail = null;
+    notifyListeners();
   }
 }

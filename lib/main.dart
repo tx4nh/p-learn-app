@@ -15,7 +15,7 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Provider<AuthService>(
+    return ChangeNotifierProvider<AuthService>(
       create: (_) => AuthService(),
       child: const MaterialApp(
         debugShowCheckedModeBanner: false,
