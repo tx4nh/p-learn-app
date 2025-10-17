@@ -4,14 +4,27 @@ import 'package:p_learn_app/screens/main_navigation/main_tab_screen.dart';
 import 'package:p_learn_app/services/auth_service.dart';
 import 'package:provider/provider.dart';
 
-class AuthWrapper extends StatelessWidget {
+class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
+
+  @override
+  State<AuthWrapper> createState() => _AuthWrapperState();
+}
+
+class _AuthWrapperState extends State<AuthWrapper> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AuthService>().checkAuthStatus();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthService>(
       builder: (context, authService, child) {
-        if (!authService.isLoggedIn) {
+        if (authService.isLoggedIn) {
           return const MainTabScreen();
         } else {
           return const LoginScreen();
