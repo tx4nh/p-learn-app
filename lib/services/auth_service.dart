@@ -12,37 +12,80 @@ class AuthService with ChangeNotifier {
   String? get currentUserEmail => _userEmail;
 
   Future<bool> login(String email, String password) async {
-    try {
-      // For now, we'll just simulate a successful login without a real API call
-      // In a real app, you would make the http call here.
-      
-      // final url = Uri.parse(Endpoints.login);
-      // final response = await http.post(
-      //   url,
-      //   headers: {'Content-Type': 'application/json; charset=UTF-8'},
-      //   body: jsonEncode({'username': email, 'password': password}),
-      // );
+  // LOG: In ra thông tin trước khi gửi đi
+  print('📡 [AuthService] Đang gửi yêu cầu đăng nhập đến: ${Endpoints.login}');
+  print('   => Body: ${jsonEncode({'username': email, 'password': password})}');
 
-      // if (response.statusCode == 200) {
-      //   _isLoggedIn = true;
-      //   _userEmail = email; // Store email on successful login
-      //   notifyListeners(); // Notify listeners of the change
-      //   return true;
-      // } else {
-      //   return false;
-      // }
+  try {
+    final url = Uri.parse(Endpoints.login);
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json; charset=UTF-8'},
+      body: jsonEncode({'username': email, 'password': password}),
+    );
 
-      // Simulating a successful login for now
-      await Future.delayed(const Duration(seconds: 1));
+    // LOG: In ra mã trạng thái và nội dung phản hồi từ server
+    print('📦 [AuthService] Server Response Status Code: ${response.statusCode}');
+    print('📦 [AuthService] Server Response Body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      print('✅ [AuthService] Đăng nhập thành công từ API.');
       _isLoggedIn = true;
-      _userEmail = email;
-      notifyListeners();
+      _userEmail = email; 
+      notifyListeners(); 
       return true;
-
-    } catch (e) {
+    } else {
+      print('❌ [AuthService] API trả về lỗi (statusCode != 200).');
       return false;
     }
+  } catch (e) {
+    // LOG: Bắt lỗi nếu không thể kết nối đến server
+    print('🔥 [AuthService] ĐÃ CÓ LỖI KẾT NỐI: ${e.toString()}');
+    return false;
   }
+}
+
+// Thêm hàm này vào trong class AuthService
+Future<bool> register(String username, String email, String password) async {
+  // LOG: In ra thông tin trước khi gửi đi
+  print('📡 [REGISTER] Đang gửi yêu cầu đăng ký đến: ${Endpoints.register}');
+  print('   => Body: ${jsonEncode({
+        'username': username,
+        'email': email,
+        'password': password
+      })}');
+
+  try {
+    // Giả sử bạn có Endpoints.register
+    final url = Uri.parse(Endpoints.register); 
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json; charset=UTF-8'},
+      body: jsonEncode({
+        'username': username,
+        'email': email,
+        'password': password,
+      }),
+    );
+
+    // LOG: In ra mã trạng thái và nội dung phản hồi từ server
+    print('📦 [REGISTER] Server Response Status Code: ${response.statusCode}');
+    print('📦 [REGISTER] Server Response Body: ${response.body}');
+
+    // Kiểm tra mã 200 (OK) hoặc 201 (Created) cho việc đăng ký thành công
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      print('✅ [REGISTER] Đăng ký thành công từ API.');
+      return true;
+    } else {
+      print('❌ [REGISTER] API trả về lỗi (statusCode không phải 200 hoặc 201).');
+      return false;
+    }
+  } catch (e) {
+    // LOG: Bắt lỗi nếu không thể kết nối đến server
+    print('🔥 [REGISTER] ĐÃ CÓ LỖI KẾT NỐI: ${e.toString()}');
+    return false;
+  }
+}
 
   void logout() {
     _isLoggedIn = false;

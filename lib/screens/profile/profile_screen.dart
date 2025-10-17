@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:p_learn_app/screens/auth/login_screen.dart';
 import 'package:provider/provider.dart';
 import '../../services/auth_service.dart';
 
@@ -35,8 +36,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onPressed: () {
                 authService.logout();
                 Navigator.of(context).pop();
-                // Điều hướng về màn hình đăng nhập
-                Navigator.of(context).pushReplacementNamed('/login');
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const LoginScreen(),
+                  ),
+                );
               },
               child: const Text(
                 'Đăng xuất',
