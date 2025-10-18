@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:p_learn_app/screens/home/home_screen.dart';
 import 'package:p_learn_app/screens/main_navigation/main_tab_screen.dart';
 import 'package:provider/provider.dart';
 import 'register_screen.dart';

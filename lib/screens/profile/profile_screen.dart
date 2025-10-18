@@ -36,10 +36,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onPressed: () {
                 authService.logout();
                 Navigator.of(context).pop();
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const LoginScreen(),
-                  ),
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
                 );
               },
               child: const Text(
@@ -72,14 +70,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         : _displayNameController.text;
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+      backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
-        title: const Text(
-          'Thông tin cá nhân',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.white,
+        title: const Text('', style: TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.red.shade600,
+        foregroundColor: Colors.white,
         elevation: 0,
+        toolbarHeight: 15,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -87,55 +84,61 @@ class _ProfileScreenState extends State<ProfileScreen> {
             // Header với avatar
             Container(
               width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.shade200,
-                    blurRadius: 10,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
-              ),
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
+              decoration: BoxDecoration(color: Colors.red.shade600),
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  const SizedBox(width: 15),
+
                   CircleAvatar(
-                    radius: 50,
-                    backgroundColor: Colors.blue.shade100,
+                    radius: 40,
+                    backgroundColor: Colors.white,
                     child: Icon(
                       Icons.person,
-                      size: 60,
-                      color: Colors.blue.shade700,
+                      size: 50,
+                      color: Colors.red.shade600,
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    displayName,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.shade50,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      'MSV: $studentCode',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.blue.shade700,
-                        fontWeight: FontWeight.w500,
+
+                  const SizedBox(width: 15),
+
+                  Column(
+                    children: [
+                      Text(
+                        displayName,
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
+                      const SizedBox(height: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.3),
+                          ),
+                        ),
+                        child: Text(
+                          'MSV: $studentCode',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
+
+                  const SizedBox(width: 15),
                 ],
               ),
             ),
@@ -148,13 +151,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.shade200,
-                    blurRadius: 5,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
               ),
               child: Column(
                 children: [
@@ -163,7 +159,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     title: 'Mã sinh viên',
                     subtitle: studentCode,
                   ),
-                  const Divider(height: 1),
+                  const Divider(height: 1, indent: 72),
                   _buildEditableInfoTile(
                     icon: Icons.person_outline,
                     title: 'Tên hiển thị',
@@ -181,24 +177,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.shade200,
-                    blurRadius: 5,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
               ),
               child: Column(
                 children: [
-                  _buildActionTile(
-                    icon: Icons.notifications_outlined,
-                    title: 'Thông báo',
-                    onTap: () {
-                      // TODO: Điều hướng đến cài đặt thông báo
-                    },
+                  _buildEditableInfoTile(
+                    icon: Icons.email_outlined,
+                    title: 'Email lấy mật khẩu',
+                    subtitle: studentCode,
                   ),
-                  const Divider(height: 1),
+                  const Divider(height: 1, indent: 72),
                   _buildActionTile(
                     icon: Icons.lock_outline,
                     title: 'Đổi mật khẩu',
@@ -206,7 +193,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       // TODO: Điều hướng đến màn hình đổi mật khẩu
                     },
                   ),
-                  const Divider(height: 1),
+                  const Divider(height: 1, indent: 72),
                   _buildActionTile(
                     icon: Icons.help_outline,
                     title: 'Trợ giúp',
@@ -218,7 +205,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
 
             // Nút đăng xuất
             Container(
@@ -232,12 +219,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red.shade400,
+                  backgroundColor: Colors.red.shade600,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
+                  elevation: 0,
                 ),
               ),
             ),
@@ -255,22 +243,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required String subtitle,
   }) {
     return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Colors.blue.shade50,
+          color: Colors.red.shade50,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(icon, color: Colors.blue.shade700),
+        child: Icon(icon, color: Colors.red.shade600, size: 24),
       ),
       title: Text(
         title,
-        style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+        style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
       ),
       subtitle: Text(
         subtitle,
         style: const TextStyle(
-          fontSize: 16,
+          fontSize: 15,
           fontWeight: FontWeight.w500,
           color: Colors.black87,
         ),
@@ -284,17 +273,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required String subtitle,
   }) {
     return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Colors.blue.shade50,
+          color: Colors.red.shade50,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(icon, color: Colors.blue.shade700),
+        child: Icon(icon, color: Colors.red.shade600, size: 24),
       ),
       title: Text(
         title,
-        style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+        style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
       ),
       subtitle: _isEditing
           ? TextField(
@@ -302,21 +292,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
               decoration: const InputDecoration(
                 isDense: true,
                 contentPadding: EdgeInsets.symmetric(vertical: 8),
+                border: InputBorder.none,
               ),
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
               autofocus: true,
             )
           : Text(
               subtitle,
               style: const TextStyle(
-                fontSize: 16,
+                fontSize: 15,
                 fontWeight: FontWeight.w500,
                 color: Colors.black87,
               ),
             ),
       trailing: IconButton(
         icon: Icon(_isEditing ? Icons.check : Icons.edit),
-        color: Colors.blue.shade700,
+        color: Colors.red.shade600,
         onPressed: () {
           if (_isEditing) {
             _saveDisplayName();
@@ -337,17 +328,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required VoidCallback onTap,
   }) {
     return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Colors.blue.shade50,
+          color: Colors.red.shade50,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(icon, color: Colors.blue.shade700),
+        child: Icon(icon, color: Colors.red.shade600, size: 24),
       ),
       title: Text(
         title,
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
       ),
       trailing: Icon(Icons.chevron_right, color: Colors.grey.shade400),
       onTap: onTap,

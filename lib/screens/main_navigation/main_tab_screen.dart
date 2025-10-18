@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:p_learn_app/screens/courses/course_list_screen.dart';
 import 'package:p_learn_app/screens/home/home_screen.dart';
@@ -31,30 +30,27 @@ class _MainTabScreenState extends State<MainTabScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _screens,
-      ),
+      body: IndexedStack(index: _selectedIndex, children: _screens),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
+            activeIcon: Icon(Icons.home, color: Colors.red),
             label: 'Trang chủ',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.school_outlined),
-            activeIcon: Icon(Icons.school),
+            activeIcon: Icon(Icons.school, color: Colors.red),
             label: 'Môn học',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.build_outlined),
-            activeIcon: Icon(Icons.build),
+            activeIcon: Icon(Icons.build, color: Colors.red),
             label: 'Công cụ',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
+            activeIcon: Icon(Icons.person, color: Colors.red),
             label: 'Cá nhân',
           ),
         ],
