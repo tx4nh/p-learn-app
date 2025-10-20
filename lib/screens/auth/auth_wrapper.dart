@@ -24,7 +24,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
   Widget build(BuildContext context) {
     return Consumer<AuthService>(
       builder: (context, authService, child) {
-        if (authService.isLoggedIn) {
+        if (!authService.isLoggedIn) {
           return const MainTabScreen();
         } else {
           return const LoginScreen();
