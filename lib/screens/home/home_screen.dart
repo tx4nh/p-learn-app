@@ -89,18 +89,23 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Text(
             'Xin chào, PTITer $uId!',
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
           const SizedBox(height: 2),
           Text(
             'Mã Sinh Viên: $userId',
-            style: TextStyle(fontSize: 15, color: Colors.grey.shade600),
+            style: TextStyle(fontSize: 15, color: Colors.white),
           ),
         ],
       ),
       actions: [
         IconButton(
           icon: const Icon(Icons.notifications_outlined),
+          color: Colors.white,
           iconSize: 28,
           onPressed: () {
             print('Hiển thị thông báo!');
@@ -109,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         const SizedBox(width: 8),
       ],
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.red,
       elevation: 0,
     );
   }

@@ -232,39 +232,40 @@ class _PomodoroScreenState extends State<PomodoroScreen> {
                 ],
               ),
             ),
-            Expanded(
-              flex: 1,
-              child: Container(
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Flexible(
+                flex: 1,
+                child: Container(
+                  width: double.infinity,
+                  height: 175,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.all(Radius.circular(30)),
                   ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24.0,
-                    vertical: 20.0,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _buildDurationEditor(
-                        label: 'Work',
-                        duration: _workDuration,
-                        onIncrement: () => _updateDuration(true, true),
-                        onDecrement: () => _updateDuration(true, false),
-                      ),
-                      const SizedBox(height: 16),
-                      _buildDurationEditor(
-                        label: 'Break',
-                        duration: _breakDuration,
-                        onIncrement: () => _updateDuration(false, true),
-                        onDecrement: () => _updateDuration(false, false),
-                      ),
-                    ],
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0,
+                      vertical: 20.0,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildDurationEditor(
+                          label: 'Work',
+                          duration: _workDuration,
+                          onIncrement: () => _updateDuration(true, true),
+                          onDecrement: () => _updateDuration(true, false),
+                        ),
+                        const SizedBox(height: 16),
+                        _buildDurationEditor(
+                          label: 'Break',
+                          duration: _breakDuration,
+                          onIncrement: () => _updateDuration(false, true),
+                          onDecrement: () => _updateDuration(false, false),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
