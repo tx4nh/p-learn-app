@@ -68,8 +68,65 @@ class _PomodoroScreenState extends State<PomodoroScreen> {
         _breakDuration = currentMinutes * 60;
         prefs.setInt('breakDuration', currentMinutes);
       }
-      _resetTimer();
+      if (!_isTimerRunning) {
+        _timeRemaining = _isWorkSession ? _workDuration : _breakDuration;
+      }
     });
+  }
+
+  Future<void> _setDuration(bool isWork, int minutes) async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      if (isWork) {
+        _workDuration = minutes * 60;
+        prefs.setInt('workDuration', minutes);
+      } else {
+        _breakDuration = minutes * 60;
+        prefs.setInt('breakDuration', minutes);
+      }
+      if (!_isTimerRunning) {
+        _timeRemaining = _isWorkSession ? _workDuration : _breakDuration;
+      }
+    });
+  }
+
+  void _showDurationInputDialog(bool isWork) {
+    final TextEditingController controller = TextEditingController();
+    controller.text = (isWork ? _workDuration ~/ 60 : _breakDuration ~/ 60).toString();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Set ${isWork ? 'Work' : 'Break'} Duration'),
+          content: TextField(
+            controller: controller,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+              labelText: 'Duration in minutes',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                final int? minutes = int.tryParse(controller.text);
+                if (minutes != null && minutes > 0) {
+                  _setDuration(isWork, minutes);
+                }
+                Navigator.of(context).pop();
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   String get _formattedTime {
@@ -256,6 +313,7 @@ class _PomodoroScreenState extends State<PomodoroScreen> {
                           duration: _workDuration,
                           onIncrement: () => _updateDuration(true, true),
                           onDecrement: () => _updateDuration(true, false),
+                          onTap: () => _showDurationInputDialog(true),
                         ),
                         const SizedBox(height: 16),
                         _buildDurationEditor(
@@ -263,6 +321,7 @@ class _PomodoroScreenState extends State<PomodoroScreen> {
                           duration: _breakDuration,
                           onIncrement: () => _updateDuration(false, true),
                           onDecrement: () => _updateDuration(false, false),
+                          onTap: () => _showDurationInputDialog(false),
                         ),
                       ],
                     ),
@@ -310,6 +369,7 @@ class _PomodoroScreenState extends State<PomodoroScreen> {
     required int duration,
     required VoidCallback onIncrement,
     required VoidCallback onDecrement,
+    required VoidCallback onTap,
   }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -330,16 +390,19 @@ class _PomodoroScreenState extends State<PomodoroScreen> {
               iconSize: 28,
               color: Colors.grey[400],
             ),
-            SizedBox(
-              width: 60,
-              child: Text(
-                '${duration ~/ 60}m',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey[800],
+            GestureDetector(
+              onTap: onTap,
+              child: SizedBox(
+                width: 60,
+                child: Text(
+                  '${duration ~/ 60}m',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey[800],
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
               ),
             ),
             IconButton(
