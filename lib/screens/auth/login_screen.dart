@@ -57,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
         print('🎉 [LOGIN] Đăng nhập thành công! Chuẩn bị điều hướng đến HomeScreen.');
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const MainTabScreen()),
+          MaterialPageRoute(builder: (context) => const MainTabScreen(initialIndex: 0)),
         );
         // return không thực sự cần thiết ở đây vì không có code nào phía sau trong khối if
       }

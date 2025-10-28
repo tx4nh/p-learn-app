@@ -25,7 +25,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
     return Consumer<AuthService>(
       builder: (context, authService, child) {
         if (!authService.isLoggedIn) {
-          return const MainTabScreen();
+          return const MainTabScreen(initialIndex: 0);
         } else {
           return const LoginScreen();
         }

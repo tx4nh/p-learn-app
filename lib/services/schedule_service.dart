@@ -59,34 +59,47 @@ class ScheduleService {
   Future<List<ScheduleItem>> getMockSchedule() async {
     await Future.delayed(const Duration(seconds: 1)); // Giả lập network delay
 
+    final today = DateTime.now();
+    final startOfWeek = today.subtract(Duration(days: today.weekday - 1));
+
     return [
+      // Monday
       ScheduleItem(
         id: '1',
         time: '08:00 - 10:00',
         subject: 'Lập trình di động',
         room: 'Phòng A101',
-        date: DateTime.now(),
+        date: startOfWeek,
       ),
       ScheduleItem(
         id: '2',
         time: '10:15 - 12:15',
         subject: 'Cơ sở dữ liệu',
         room: 'Phòng B203',
-        date: DateTime.now(),
+        date: startOfWeek,
       ),
+      // Wednesday
       ScheduleItem(
         id: '3',
         time: '14:00 - 16:00',
         subject: 'Mạng máy tính',
         room: 'Phòng C305',
-        date: DateTime.now(),
+        date: startOfWeek.add(const Duration(days: 2)),
       ),
+      // Friday
       ScheduleItem(
         id: '4',
-        time: '16:15 - 17:45',
+        time: '09:00 - 11:00',
         subject: 'Kiểm thử phần mềm',
         room: 'Phòng D402',
-        date: DateTime.now(),
+        date: startOfWeek.add(const Duration(days: 4)),
+      ),
+      ScheduleItem(
+        id: '5',
+        time: '13:00 - 15:00',
+        subject: 'Trí tuệ nhân tạo',
+        room: 'Phòng E501',
+        date: startOfWeek.add(const Duration(days: 4)),
       ),
     ];
   }

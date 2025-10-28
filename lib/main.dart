@@ -4,9 +4,13 @@ import 'package:p_learn_app/screens/auth/auth_wrapper.dart';
 import 'package:p_learn_app/services/auth_service.dart';
 import 'package:provider/provider.dart';
 
+import 'package:p_learn_app/services/notification_service.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
+  await NotificationService().init();
+  await NotificationService().requestPermissions();
   runApp(const MainApp());
 }
 
