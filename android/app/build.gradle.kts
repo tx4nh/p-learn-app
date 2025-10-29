@@ -11,6 +11,7 @@ android {
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
@@ -39,6 +40,14 @@ android {
     }
 }
 
+dependencies {
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22") // Bạn có thể đã có dòng này
+
+    // THÊM DÒNG QUAN TRỌNG NÀY VÀO
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+
+    // ... có thể có các dòng 'implementation' khác ở đây ...
+}
 flutter {
     source = "../.."
 }
