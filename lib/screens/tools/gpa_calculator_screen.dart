@@ -93,7 +93,7 @@ class _GpaCalculatorScreenState extends State<GpaCalculatorScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Add Course'),
+          title: const Text('Thêm môn học'),
           content: Form(
             key: _formKey,
             child: Column(
@@ -101,31 +101,31 @@ class _GpaCalculatorScreenState extends State<GpaCalculatorScreen> {
               children: [
                 TextFormField(
                   controller: _nameController,
-                  decoration: const InputDecoration(labelText: 'Course Name'),
+                  decoration: const InputDecoration(labelText: 'Tên môn học'),
                   validator: (value) =>
-                      value!.isEmpty ? 'Please enter a name' : null,
+                      value!.isEmpty ? 'Vui lòng nhập tên môn học' : null,
                 ),
                 TextFormField(
                   controller: _gradeController,
                   decoration: const InputDecoration(
-                    labelText: 'Grade (e.g., 3.5)',
+                    labelText: 'Điểm (ví dụ: 3.5)',
                   ),
                   keyboardType: TextInputType.number,
                   validator: (value) {
-                    if (value!.isEmpty) return 'Please enter a grade';
-                    if (double.tryParse(value) == null) return 'Invalid number';
+                    if (value!.isEmpty) return 'Vui lòng nhập điểm';
+                    if (double.tryParse(value) == null) return 'Số không hợp lệ';
                     return null;
                   },
                 ),
                 TextFormField(
                   controller: _creditsController,
                   decoration: const InputDecoration(
-                    labelText: 'Credits (e.g., 3)',
+                    labelText: 'Số tín chỉ (ví dụ: 3)',
                   ),
                   keyboardType: TextInputType.number,
                   validator: (value) {
-                    if (value!.isEmpty) return 'Please enter credits';
-                    if (int.tryParse(value) == null) return 'Invalid number';
+                    if (value!.isEmpty) return 'Vui lòng nhập số tín chỉ';
+                    if (int.tryParse(value) == null) return 'Số không hợp lệ';
                     return null;
                   },
                 ),
@@ -135,9 +135,9 @@ class _GpaCalculatorScreenState extends State<GpaCalculatorScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: const Text('Hủy'),
             ),
-            ElevatedButton(onPressed: _addCourse, child: const Text('Add')),
+            ElevatedButton(onPressed: _addCourse, child: const Text('Thêm')),
           ],
         );
       },
@@ -148,58 +148,102 @@ class _GpaCalculatorScreenState extends State<GpaCalculatorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('GPA Calculator'),
-        actions: [
-          // This button is a placeholder for the API call
-          IconButton(
-            icon: const Icon(Icons.api),
-            onPressed: _fetchCoursesFromApi,
-            tooltip: 'Fetch Courses from API (TODO)',
-          ),
-        ],
+        title: const Text(
+          'Tính điểm GPA',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.red.shade700,
+        foregroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.white),
+        elevation: 0,
       ),
+      backgroundColor: Colors.white, // Changed Scaffold background to white
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                Text(
-                  'Your GPA',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  _gpa.toStringAsFixed(2),
-                  style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red,
+            padding: const EdgeInsets.all(12.0),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.red.shade700, // Changed GPA summary background to red
+                borderRadius: BorderRadius.circular(15.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    spreadRadius: 2,
                   ),
-                ),
-              ],
+                ],
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    'GPA của bạn',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: Colors.white, // Changed text color to white
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    _gpa.toStringAsFixed(2),
+                    style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white, // Changed text color to white
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-          const Divider(),
+          const Divider(color: Colors.red),
           Expanded(
             child: _courses.isEmpty
-                ? const Center(child: Text('No courses added yet.'))
+                ? const Center(child: Text('Chưa có môn học nào được thêm.'))
                 : ListView.builder(
                     itemCount: _courses.length,
                     itemBuilder: (context, index) {
                       final course = _courses[index];
-                      return ListTile(
-                        title: Text(course.name),
-                        subtitle: Text(
-                          'Grade: ${course.grade}, Credits: ${course.credits}',
+                      return Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12.0),
+                          border: Border(left: BorderSide(color: Colors.red.shade700, width: 5)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              spreadRadius: 1,
+                              blurRadius: 5,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
                         ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () {
-                            setState(() {
-                              _courses.removeAt(index);
-                              _calculateGpa();
-                            });
-                          },
+                        child: ListTile(
+                          title: Text(
+                            course.name,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          subtitle: Text(
+                            'Điểm: ${course.grade}, Tín chỉ: ${course.credits}',
+                            style: TextStyle(
+                              color: Colors.grey[700],
+                              fontSize: 15,
+                            ),
+                          ),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () {
+                              setState(() {
+                                _courses.removeAt(index);
+                                _calculateGpa();
+                              });
+                            },
+                          ),
                         ),
                       );
                     },
@@ -209,7 +253,8 @@ class _GpaCalculatorScreenState extends State<GpaCalculatorScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddCourseDialog,
-        child: const Icon(Icons.add),
+        backgroundColor: Colors.red, // Set FAB background to red
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }

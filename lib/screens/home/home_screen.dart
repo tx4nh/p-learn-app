@@ -3,6 +3,7 @@ import 'package:p_learn_app/models/schedule_model.dart';
 import 'package:p_learn_app/screens/notification/notification_screen.dart';
 import 'package:p_learn_app/screens/main_navigation/main_tab_screen.dart';
 import 'package:p_learn_app/widgets/app_colors.dart';
+import 'package:p_learn_app/widgets/home_banners.dart';
 import 'package:p_learn_app/services/notification_service.dart';
 import 'package:provider/provider.dart';
 import '../../services/auth_service.dart';
@@ -81,6 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
               _buildHeader(context),
               const SizedBox(height: 16),
               _buildContent(),
+              const HomeBanners(),
             ],
           ),
         ),
