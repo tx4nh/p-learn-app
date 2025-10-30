@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:p_learn_app/widgets/app_colors.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomeBanners extends StatelessWidget {

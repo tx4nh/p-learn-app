@@ -2,99 +2,143 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+// 1. THÊM IMPORT CHO SHAREDPREFS
+import 'package:shared_preferences/shared_preferences.dart'; 
 import '../api/endpoints.dart';
 
 class AuthService with ChangeNotifier {
-  String? _userEmail;
+  String? _username; // <-- Đổi tên từ _userEmail sang _username cho rõ nghĩa
   bool _isLoggedIn = false;
 
   bool get isLoggedIn => _isLoggedIn;
-  String? get currentUserEmail => _userEmail;
+  String? get currentUsername => _username; // <-- Đổi tên
 
-  Future<bool> login(String email, String password) async {
-  // LOG: In ra thông tin trước khi gửi đi
-  print('📡 [AuthService] Đang gửi yêu cầu đăng nhập đến: ${Endpoints.login}');
-  print('   => Body: ${jsonEncode({'username': email, 'password': password})}');
+  Future<bool> login(String username, String password) async { // <-- Đổi tên
+    print('📡 [AuthService] Đang gửi yêu cầu đăng nhập đến: ${Endpoints.login}');
+    print('   => Body: ${jsonEncode({'username': username, 'password': password})}');
 
-  try {
-    final url = Uri.parse(Endpoints.login);
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json; charset=UTF-8'},
-      body: jsonEncode({'username': email, 'password': password}),
-    );
+    try {
+      final url = Uri.parse(Endpoints.login);
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json; charset=UTF-8'},
+        body: jsonEncode({'username': username, 'password': password}),
+      );
 
-    // LOG: In ra mã trạng thái và nội dung phản hồi từ server
-    print('📦 [AuthService] Server Response Status Code: ${response.statusCode}');
-    print('📦 [AuthService] Server Response Body: ${response.body}');
+      print('📦 [AuthService] Server Response Status Code: ${response.statusCode}');
+      print('📦 [AuthService] Server Response Body: ${response.body}');
 
-    if (response.statusCode == 200) {
-      print('✅ [AuthService] Đăng nhập thành công từ API.');
-      _isLoggedIn = true;
-      _userEmail = email; 
-      notifyListeners(); 
-      return true;
-    } else {
-      print('❌ [AuthService] API trả về lỗi (statusCode != 200).');
+      if (response.statusCode == 200) {
+        print('✅ [AuthService] Đăng nhập thành công từ API.');
+
+        try {
+          final responseData = jsonDecode(response.body);
+
+          // Kiểm tra kỹ cấu trúc JSON
+          if (responseData.containsKey('token') && 
+              responseData['token'] is Map &&
+              responseData['token'].containsKey('access_token') &&
+              responseData.containsKey('user') &&
+              responseData['user'] is Map &&
+              responseData['user'].containsKey('username')) {
+
+            final String accessToken = responseData['token']['access_token'];
+            final String serverUsername = responseData['user']['username'];
+
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString('access_token', accessToken);
+            await prefs.setString('username', serverUsername);
+            
+            print('💾 [AuthService] Đã LƯU token và username vào SharedPreferences!');
+            
+            _isLoggedIn = true;
+            _username = serverUsername;
+            notifyListeners();
+            return true;
+          } else {
+            print('❌ [AuthService] Lỗi: Cấu trúc JSON trả về không đúng định dạng.');
+            print('   => Expected: {"token": {"access_token": "..." }, "user": {"username": "..."}}');
+            print('   => Received: ${response.body}');
+            return false;
+          }
+        } catch (e) {
+          print('🔥 [AuthService] Lỗi khi xử lý JSON: ${e.toString()}');
+          print('   => Body nhận được: ${response.body}');
+          return false;
+        }
+      } else {
+        print('❌ [AuthService] API trả về lỗi (statusCode != 200).');
+        return false;
+      }
+    } catch (e) {
+      print('🔥 [AuthService] ĐÃ CÓ LỖI KẾT NỐI: ${e.toString()}');
       return false;
     }
-  } catch (e) {
-    // LOG: Bắt lỗi nếu không thể kết nối đến server
-    print('🔥 [AuthService] ĐÃ CÓ LỖI KẾT NỐI: ${e.toString()}');
-    return false;
   }
-}
 
-// Thêm hàm này vào trong class AuthService
-Future<bool> register(String username, String email, String password) async {
-  // LOG: In ra thông tin trước khi gửi đi
-  print('📡 [REGISTER] Đang gửi yêu cầu đăng ký đến: ${Endpoints.register}');
-  print('   => Body: ${jsonEncode({
-        'username': username,
-        'email': email,
-        'password': password
-      })}');
+  Future<bool> register(String username, String email, String password) async {
+    // ... (Hàm register của bạn giữ nguyên, không cần sửa) ...
+    print('📡 [REGISTER] Đang gửi yêu cầu đăng ký đến: ${Endpoints.register}');
+    print('   => Body: ${jsonEncode({
+          'username': username,
+          'email': email,
+          'password': password
+        })}');
 
-  try {
-    // Giả sử bạn có Endpoints.register
-    final url = Uri.parse(Endpoints.register); 
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json; charset=UTF-8'},
-      body: jsonEncode({
-        'username': username,
-        'email': email,
-        'password': password,
-      }),
-    );
+    try {
+      final url = Uri.parse(Endpoints.register); 
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json; charset=UTF-8'},
+        body: jsonEncode({
+          'username': username,
+          'email': email,
+          'password': password,
+        }),
+      );
 
-    // LOG: In ra mã trạng thái và nội dung phản hồi từ server
-    print('📦 [REGISTER] Server Response Status Code: ${response.statusCode}');
-    print('📦 [REGISTER] Server Response Body: ${response.body}');
+      print('📦 [REGISTER] Server Response Status Code: ${response.statusCode}');
+      print('📦 [REGISTER] Server Response Body: ${response.body}');
 
-    // Kiểm tra mã 200 (OK) hoặc 201 (Created) cho việc đăng ký thành công
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      print('✅ [REGISTER] Đăng ký thành công từ API.');
-      return true;
-    } else {
-      print('❌ [REGISTER] API trả về lỗi (statusCode không phải 200 hoặc 201).');
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print('✅ [REGISTER] Đăng ký thành công từ API.');
+        return true;
+      } else {
+        print('❌ [REGISTER] API trả về lỗi (statusCode không phải 200 hoặc 201).');
+        return false;
+      }
+    } catch (e) {
+      print('🔥 [REGISTER] ĐÃ CÓ LỖI KẾT NỐI: ${e.toString()}');
       return false;
     }
-  } catch (e) {
-    // LOG: Bắt lỗi nếu không thể kết nối đến server
-    print('🔥 [REGISTER] ĐÃ CÓ LỖI KẾT NỐI: ${e.toString()}');
-    return false;
   }
-}
 
-  void logout() {
+  // 5. CẬP NHẬT HÀM LOGOUT
+  void logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('access_token'); // <-- Xóa token
+    await prefs.remove('username'); // <-- Xóa user
+
     _isLoggedIn = false;
-    _userEmail = null;
+    _username = null;
+    print('🚪 [AuthService] Đã logout và xóa token.');
     notifyListeners();
   }
 
+  // 6. CẬP NHẬT HÀM KIỂM TRA AUTH
   Future<void> checkAuthStatus() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    _isLoggedIn = false;
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('access_token');
+
+    if (token != null) {
+      // Nếu có token, coi như đã đăng nhập
+      _isLoggedIn = true;
+      _username = prefs.getString('username'); // <-- Lấy lại username
+      print('🔄 [AuthService] Tự động đăng nhập với token: $token');
+    } else {
+      _isLoggedIn = false;
+      print('🔄 [AuthService] Không tìm thấy token, yêu cầu đăng nhập.');
+    }
+    notifyListeners(); // Thông báo cho app biết trạng thái auth
   }
 }

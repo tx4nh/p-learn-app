@@ -63,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context, listen: false);
-    final userId = authService.currentUserEmail ?? 'Không có mã SV';
+    final userId = authService.currentUsername ?? 'Không có mã SV';
     final uId = userId.substring(userId.length - 3);
 
     return Scaffold(
