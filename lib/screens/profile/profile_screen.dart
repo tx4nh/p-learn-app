@@ -5,6 +5,10 @@ import 'package:p_learn_app/screens/auth/reset_password_screen.dart';
 import 'package:p_learn_app/services/notification_service.dart';
 import 'package:provider/provider.dart';
 import '../../services/auth_service.dart';
+import 'widgets/profile_action_tile.dart';
+import 'widgets/profile_editable_info_tile.dart';
+import 'widgets/profile_header.dart';
+import 'widgets/profile_info_tile.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -55,7 +59,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _saveDisplayName() {
-    // TODO: Lưu tên hiển thị vào database/storage
     setState(() {
       _isEditing = false;
     });
@@ -68,7 +71,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context, listen: false);
     final studentCode = authService.currentUsername ?? 'Không có mã';
-    
+
     final username = authService.currentUsername;
     String generatedName;
 
@@ -80,7 +83,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     final displayName = _displayNameController.text.isEmpty
-        ? generatedName 
+        ? generatedName
         : _displayNameController.text;
 
     final emailDisplay = authService.currentEmail ?? "Chưa có email";
@@ -97,65 +100,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(color: Colors.red.shade600),
-              padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const SizedBox(width: 15),
-
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundColor: Colors.white,
-                    child: Icon(
-                      Icons.person,
-                      size: 50,
-                      color: Colors.red.shade600,
-                    ),
-                  ),
-
-                  const SizedBox(width: 15),
-
-                  Column(
-                    children: [
-                      Text(
-                        displayName,
-                        style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 5,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.3),
-                          ),
-                        ),
-                        child: Text(
-                          'MSV: $studentCode',
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(width: 15),
-                ],
-              ),
+            ProfileHeader(
+              displayName: displayName,
+              studentCode: studentCode,
             ),
 
             const SizedBox(height: 16),
@@ -169,16 +116,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: Column(
                 children: [
-                  _buildInfoTile(
+                  ProfileInfoTile(
                     icon: Icons.badge_outlined,
                     title: 'Mã sinh viên',
                     subtitle: studentCode,
                   ),
                   const Divider(height: 1, indent: 72),
-                  _buildEditableInfoTile(
+                  ProfileEditableInfoTile(
                     icon: Icons.person_outline,
                     title: 'Tên hiển thị',
                     subtitle: displayName,
+                    isEditing: _isEditing,
+                    controller: _displayNameController,
+                    onPressed: () {
+                      if (_isEditing) {
+                        _saveDisplayName();
+                      } else {
+                        setState(() {
+                          _isEditing = true;
+                          _displayNameController.text = displayName;
+                        });
+                      }
+                    },
                   ),
                 ],
               ),
@@ -195,13 +154,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: Column(
                 children: [
-                  _buildInfoTile(
+                  ProfileInfoTile(
                     icon: Icons.email_outlined,
                     title: 'Email lấy mật khẩu',
                     subtitle: emailDisplay,
                   ),
                   const Divider(height: 1, indent: 72),
-                  _buildActionTile(
+                  ProfileActionTile(
                     icon: Icons.lock_outline,
                     title: 'Đổi mật khẩu',
                     onTap: () {
@@ -214,13 +173,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     },
                   ),
                   const Divider(height: 1, indent: 72),
-                  _buildActionTile(
+                  ProfileActionTile(
                     icon: Icons.help_outline,
                     title: 'Trợ giúp',
                     onTap: () {},
                   ),
                   const Divider(height: 1, indent: 72),
-                  _buildActionTile(
+                  ProfileActionTile(
                     icon: Icons.notifications_active_outlined,
                     title: 'Kiểm tra thông báo',
                     onTap: () async {
@@ -228,21 +187,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       await notificationService.requestPermissions();
                       await notificationService.flutterLocalNotificationsPlugin
                           .show(
-                            0,
-                            'Thông báo kiểm tra',
-                            'Đây là một thông báo thử nghiệm từ P-Learn.',
-                            const NotificationDetails(
-                              android: AndroidNotificationDetails(
-                                'test_channel_id',
-                                'Test Channel',
-                                channelDescription:
-                                    'Channel for test notifications',
-                                importance: Importance.max,
-                                priority: Priority.high,
-                              ),
-                              iOS: DarwinNotificationDetails(),
-                            ),
-                          );
+                        0,
+                        'Thông báo kiểm tra',
+                        'Đây là một thông báo thử nghiệm từ P-Learn.',
+                        const NotificationDetails(
+                          android: AndroidNotificationDetails(
+                            'test_channel_id',
+                            'Test Channel',
+                            channelDescription:
+                                'Channel for test notifications',
+                            importance: Importance.max,
+                            priority: Priority.high,
+                          ),
+                          iOS: DarwinNotificationDetails(),
+                        ),
+                      );
                     },
                   ),
                 ],
@@ -278,115 +237,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildInfoTile({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-  }) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      leading: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: Colors.red.shade50,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Icon(icon, color: Colors.red.shade600, size: 24),
-      ),
-      title: Text(
-        title,
-        style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
-      ),
-      subtitle: Text(
-        subtitle,
-        style: const TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.w500,
-          color: Colors.black87,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEditableInfoTile({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-  }) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      leading: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: Colors.red.shade50,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Icon(icon, color: Colors.red.shade600, size: 24),
-      ),
-      title: Text(
-        title,
-        style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
-      ),
-      subtitle: _isEditing
-          ? TextField(
-              controller: _displayNameController,
-              decoration: const InputDecoration(
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(vertical: 8),
-                border: InputBorder.none,
-              ),
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-              autofocus: true,
-            )
-          : Text(
-              subtitle,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-                color: Colors.black87,
-              ),
-            ),
-      trailing: IconButton(
-        icon: Icon(_isEditing ? Icons.check : Icons.edit),
-        color: Colors.red.shade600,
-        onPressed: () {
-          if (_isEditing) {
-            _saveDisplayName();
-          } else {
-            setState(() {
-              _isEditing = true;
-              _displayNameController.text = subtitle;
-            });
-          }
-        },
-      ),
-    );
-  }
-
-  Widget _buildActionTile({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-  }) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      leading: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: Colors.red.shade50,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Icon(icon, color: Colors.red.shade600, size: 24),
-      ),
-      title: Text(
-        title,
-        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-      ),
-      trailing: Icon(Icons.chevron_right, color: Colors.grey.shade400),
-      onTap: onTap,
     );
   }
 }
