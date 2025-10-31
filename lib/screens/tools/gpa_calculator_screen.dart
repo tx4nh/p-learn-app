@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 
-// Data model for a course
 class Course {
   String name;
   double grade;
   int credits;
-
   Course({required this.name, required this.grade, required this.credits});
 }
 
@@ -22,31 +20,7 @@ class _GpaCalculatorScreenState extends State<GpaCalculatorScreen> {
   final _nameController = TextEditingController();
   final _gradeController = TextEditingController();
   final _creditsController = TextEditingController();
-
   double _gpa = 0.0;
-
-  // TODO: Implement API call to fetch courses for the current semester
-  // This function would be called in initState() or on a button press.
-  Future<void> _fetchCoursesFromApi() async {
-    // Example:
-    // final response = await http.get(Uri.parse('YOUR_API_ENDPOINT/courses'));
-    // if (response.statusCode == 200) {
-    //   final List<dynamic> courseData = json.decode(response.body);
-    //   setState(() {
-    //     _courses = courseData.map((data) => Course(
-    //       name: data['name'],
-    //       grade: data['grade'], // Assuming grade is pre-filled or 0
-    //       credits: data['credits'],
-    //     )).toList();
-    //   });
-    // } else {
-    //   // Handle error
-    // }
-    // For now, we'll use dummy data.
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('TODO: Fetch courses from API')),
-    );
-  }
 
   void _addCourse() {
     if (_formKey.currentState!.validate()) {
@@ -63,7 +37,7 @@ class _GpaCalculatorScreenState extends State<GpaCalculatorScreen> {
         _creditsController.clear();
         _calculateGpa();
       });
-      Navigator.of(context).pop(); // Close the dialog
+      Navigator.of(context).pop();
     }
   }
 
@@ -157,7 +131,7 @@ class _GpaCalculatorScreenState extends State<GpaCalculatorScreen> {
         iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,
       ),
-      backgroundColor: Colors.white, // Changed Scaffold background to white
+      backgroundColor: Colors.white, 
       body: Column(
         children: [
           Padding(
@@ -166,7 +140,7 @@ class _GpaCalculatorScreenState extends State<GpaCalculatorScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
-                color: Colors.red.shade700, // Changed GPA summary background to red
+                color: Colors.red.shade700,
                 borderRadius: BorderRadius.circular(15.0),
                 boxShadow: [
                   BoxShadow(
@@ -181,7 +155,7 @@ class _GpaCalculatorScreenState extends State<GpaCalculatorScreen> {
                   Text(
                     'GPA của bạn',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: Colors.white, // Changed text color to white
+                      color: Colors.white, 
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -189,7 +163,7 @@ class _GpaCalculatorScreenState extends State<GpaCalculatorScreen> {
                     _gpa.toStringAsFixed(2),
                     style: Theme.of(context).textTheme.displayMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: Colors.white, // Changed text color to white
+                      color: Colors.white, 
                     ),
                   ),
                 ],
