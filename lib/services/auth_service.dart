@@ -113,6 +113,55 @@ class AuthService with ChangeNotifier {
     }
   }
 
+  Future<String> resetPassword(String email, String newPassword) async {
+    print('📡 [AuthService] [RESET_PW] Đang gửi yêu cầu đến: ${Endpoints.resetPassword}');
+    
+    final url = Uri.parse(Endpoints.resetPassword);
+    
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Accept': 'application/json',
+        },
+        // Dựa theo ảnh bạn cung cấp, body cần 'email' và 'new_password'
+        body: jsonEncode({
+          'email': email,
+          'new_password': newPassword,
+        }),
+      );
+
+      // Giải mã body để xử lý tiếng Việt (nếu có) và log
+      // Ngay cả khi response 200 là string, 422 có thể là JSON
+      final responseBody = jsonDecode(utf8.decode(response.bodyBytes));
+      print('📦 [AuthService] [RESET_PW] Response Status: ${response.statusCode}');
+      print('📦 [AuthService] [RESET_PW] Response Body: $responseBody');
+
+      if (response.statusCode == 200) {
+        // API trả về string, ví dụ: "Password reset successful"
+        print('✅ [AuthService] [RESET_PW] Đặt lại mật khẩu thành công.');
+        return responseBody.toString(); 
+      } else if (response.statusCode == 422) {
+        // Lỗi validation (Dựa trên ảnh của bạn)
+        print('❌ [AuthService] [RESET_PW] Lỗi Validation (422).');
+        String errorMessage = 'Dữ liệu không hợp lệ';
+        // Thử trích xuất lỗi chi tiết nếu API trả về
+        if (responseBody is Map && responseBody.containsKey('detail')) {
+          errorMessage = responseBody['detail'];
+        }
+        throw Exception(errorMessage);
+      } else {
+        // Các lỗi máy chủ khác
+        print('❌ [AuthService] [RESET_PW] Lỗi server: ${response.statusCode}.');
+        throw Exception('Lỗi máy chủ: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('🔥 [AuthService] [RESET_PW] Lỗi khi gọi resetPassword: ${e.toString()}');
+      // Ném lại lỗi để UI (ResetPasswordScreen) có thể bắt được
+      throw Exception('Không thể kết nối. ${e.toString()}');
+    }
+  }
   // 5. CẬP NHẬT HÀM LOGOUT
   void logout() async {
     final prefs = await SharedPreferences.getInstance();
