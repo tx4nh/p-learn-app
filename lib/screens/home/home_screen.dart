@@ -43,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
       // final schedule = await _scheduleService.getScheduleByDate(DateTime.now());
 
       // Option 2: Dùng mock data để test
-      final schedule = await _scheduleService.getMockSchedule();
+      final schedule = await _scheduleService.getSchedule();
 
       // Schedule notifications
       await NotificationService().scheduleAllNotifications(schedule);

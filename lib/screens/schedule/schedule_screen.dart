@@ -1,3 +1,4 @@
+// screens/schedule_screen.dart
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:p_learn_app/models/schedule_model.dart';
@@ -23,10 +24,11 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   @override
   void initState() {
     super.initState();
-    _scheduleFuture = _scheduleService.getMockSchedule();
+    _scheduleFuture = _scheduleService.getSchedule();
   }
 
-  Map<DateTime, List<ScheduleItem>> _groupScheduleByDate(List<ScheduleItem> schedule) {
+  Map<DateTime, List<ScheduleItem>> _groupScheduleByDate(
+      List<ScheduleItem> schedule) {
     Map<DateTime, List<ScheduleItem>> grouped = {};
     for (var item in schedule) {
       DateTime date = DateTime(item.date.year, item.date.month, item.date.day);
@@ -40,13 +42,18 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
   void _scrollToDate(DateTime date) {
     final key = _dateKeys[date];
-    if (key != null) {
-      Scrollable.ensureVisible(key.currentContext!, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+    if (key != null && key.currentContext != null) {
+      Scrollable.ensureVisible(key.currentContext!,
+          duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    // ... (Phần còn lại của file build() giữ nguyên y hệt)
+    // ...
+    // Toàn bộ phần còn lại của file này không cần thay đổi gì
+    // ...
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -81,7 +88,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Lỗi: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('Không có lịch học trong tuần.'));
+            return const Center(child: Text('Không có lịch học.'));
           }
 
           final groupedSchedule = _groupScheduleByDate(snapshot.data!);
@@ -91,6 +98,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           NotificationService().scheduleAllNotifications(snapshot.data!);
 
           // Generate keys for each date
+          _dateKeys.clear(); // Xóa key cũ đi mỗi lần build lại
           for (var date in sortedDates) {
             _dateKeys.putIfAbsent(date, () => GlobalKey());
           }
@@ -107,7 +115,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     final date = sortedDates[index];
                     final items = groupedSchedule[date]!;
                     return Column(
-                      key: _dateKeys[date],
+                      key: _dateKeys[date], // Gán key
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
@@ -137,7 +145,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
   Widget _buildWeekView(Map<DateTime, List<ScheduleItem>> groupedSchedule) {
     final today = DateTime.now();
-    final startOfWeek = today.subtract(Duration(days: today.weekday - 1));
+    final startOfWeek = today.subtract(Duration(days: today.weekday - 1)); // Giả sử tuần bắt đầu T2 (weekday = 1)
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
@@ -158,6 +166,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           final day = startOfWeek.add(Duration(days: index));
           final dateOnly = DateTime(day.year, day.month, day.day);
           final hasSchedule = groupedSchedule.keys.any((d) => d.isAtSameMomentAs(dateOnly));
+          final isSelected = _selectedDate.day == day.day && _selectedDate.month == day.month && _selectedDate.year == day.year;
 
           return GestureDetector(
             onTap: () {
@@ -174,7 +183,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   DateFormat('E', 'vi_VN').format(day).substring(0, 2), // "T2", "T3", ...
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: _selectedDate.day == day.day ? Colors.red : Colors.grey[600],
+                    color: isSelected ? Colors.red : Colors.grey[600],
                   ),
                 ),
                 const SizedBox(height: 4.0),
@@ -183,7 +192,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
-                    color: _selectedDate.day == day.day ? Colors.red : Colors.black,
+                    color: isSelected ? Colors.red : Colors.black,
                   ),
                 ),
                 const SizedBox(height: 4.0),
@@ -195,7 +204,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       color: Colors.red,
                       shape: BoxShape.circle,
                     ),
-                  ),
+                  )
+                else
+                  const SizedBox(height: 6), // Thêm để giữ layout ổn định
               ],
             ),
           );

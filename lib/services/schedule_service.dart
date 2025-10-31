@@ -1,106 +1,100 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/schedule_model.dart';
+import '../models/course_model.dart';
+import '../api/endpoints.dart'; // Giả sử bạn có file này
 
 class ScheduleService {
-  // TODO: Thay đổi base URL theo API của bạn
-  static const String baseUrl = 'https://your-api.com/api';
+  Future<List<ScheduleItem>> getSchedule() async {
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('access_token');
 
-  // Lấy lịch học theo ngày
-  Future<List<ScheduleItem>> getScheduleByDate(DateTime date) async {
-    try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/schedule?date=${date.toIso8601String()}'),
-        headers: {
-          'Content-Type': 'application/json',
-          // TODO: Thêm token nếu cần
-          // 'Authorization': 'Bearer $token',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-        return data.map((item) => ScheduleItem.fromJson(item)).toList();
-      } else {
-        throw Exception('Failed to load schedule');
-      }
-    } catch (e) {
-      print('Error fetching schedule: $e');
-      rethrow;
-    }
+  // === KIỂM TRA TOKEN ===
+  // Kiểm tra xem token có null hoặc rỗng không
+  if (token == null || token.isEmpty) {
+    print('Error fetching schedule: Token is missing or empty.');
+    // Ném (throw) một lỗi cụ thể để tầng UI có thể bắt và xử lý
+    // Ví dụ: điều hướng về trang đăng nhập
+    throw Exception('Not authenticated. Token is missing.');
   }
+  // ======================
 
-  // Lấy lịch học cả tuần
-  Future<List<ScheduleItem>> getWeekSchedule(DateTime startDate) async {
-    try {
-      final response = await http.get(
-        Uri.parse(
-          '$baseUrl/schedule/week?start_date=${startDate.toIso8601String()}',
-        ),
-        headers: {
-          'Content-Type': 'application/json',
-          // TODO: Thêm token nếu cần
-        },
-      );
+  try {
+    final response = await http.get(
+      Uri.parse(Endpoints.getAllSubjects),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token', // Token đã được xác nhận là tồn tại
+      },
+    );
 
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-        return data.map((item) => ScheduleItem.fromJson(item)).toList();
-      } else {
-        throw Exception('Failed to load week schedule');
-      }
-    } catch (e) {
-      print('Error fetching week schedule: $e');
-      rethrow;
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
+      final List<Course> courses =
+          data.map((item) => Course.fromJson(item)).toList();
+
+      return _processCoursesIntoScheduleItems(courses);
+    } else {
+      // Bắt các lỗi từ server (ví dụ: 401 token hết hạn, 403 không có quyền)
+      throw Exception(
+          'Failed to load courses. Status code: ${response.statusCode}');
     }
+  } catch (e) {
+    // In lỗi ra console và ném lại lỗi để UI xử lý
+    print('Error fetching schedule: $e');
+    rethrow;
   }
+}
 
-  // Mock data để test (xóa khi có API thật)
-  Future<List<ScheduleItem>> getMockSchedule() async {
-    await Future.delayed(const Duration(seconds: 1)); // Giả lập network delay
+  List<ScheduleItem> _processCoursesIntoScheduleItems(List<Course> courses) {
+    final List<ScheduleItem> items = [];
+    final DateFormat timeFormatter = DateFormat('HH:mm');
 
-    final today = DateTime.now();
-    final startOfWeek = today.subtract(Duration(days: today.weekday - 1));
+    final Map<int, int> apiToDartWeekday = {
+      0: 7, // API Chủ Nhật (0) -> Dart Chủ Nhật (7)
+      1: 1, // API Thứ 2 (1) -> Dart Thứ 2 (1)
+      2: 2, 3: 3, 4: 4, 5: 5, 6: 6,
+    };
 
-    return [
-      // Monday
-      ScheduleItem(
-        id: '1',
-        time: '08:00 - 10:00',
-        subject: 'Lập trình di động',
-        room: 'Phòng A101',
-        date: startOfWeek,
-      ),
-      ScheduleItem(
-        id: '2',
-        time: '10:15 - 12:15',
-        subject: 'Cơ sở dữ liệu',
-        room: 'Phòng B203',
-        date: startOfWeek,
-      ),
-      // Wednesday
-      ScheduleItem(
-        id: '3',
-        time: '14:00 - 16:00',
-        subject: 'Mạng máy tính',
-        room: 'Phòng C305',
-        date: startOfWeek.add(const Duration(days: 2)),
-      ),
-      // Friday
-      ScheduleItem(
-        id: '4',
-        time: '09:00 - 11:00',
-        subject: 'Kiểm thử phần mềm',
-        room: 'Phòng D402',
-        date: startOfWeek.add(const Duration(days: 4)),
-      ),
-      ScheduleItem(
-        id: '5',
-        time: '13:00 - 15:00',
-        subject: 'Trí tuệ nhân tạo',
-        room: 'Phòng E501',
-        date: startOfWeek.add(const Duration(days: 4)),
-      ),
-    ];
+    for (final course in courses) {
+      try {
+        DateTime courseStartDate = DateTime.parse(course.startDate);
+        DateTime courseEndDate = DateTime.parse(course.endDate);
+
+        DateTime currentDate = courseStartDate;
+        while (currentDate.isBefore(courseEndDate) ||
+            currentDate.isAtSameMomentAs(courseEndDate)) {
+          
+          for (final rule in course.schedule) {
+            int? dartWeekday = apiToDartWeekday[rule.dayOfWeek];
+
+            if (dartWeekday != null && currentDate.weekday == dartWeekday) {
+              try {
+                final startTime = DateTime.parse(rule.startTime).toLocal();
+                final endTime = DateTime.parse(rule.endTime).toLocal();
+                final timeString =
+                    '${timeFormatter.format(startTime)} - ${timeFormatter.format(endTime)}';
+
+                items.add(ScheduleItem(
+                  id: '${course.id}-${currentDate.toIso8601String()}',
+                  subject: course.fullName,
+                  room: rule.room,
+                  date: currentDate,
+                  time: timeString,
+                ));
+              } catch (e) {
+                print('Error parsing time: ${rule.startTime} or ${rule.endTime}. Error: $e');
+              }
+            }
+          }
+          currentDate = currentDate.add(const Duration(days: 1));
+        }
+      } catch (e) {
+          print('Error parsing date: ${course.startDate} or ${course.endDate}. Error: $e');
+      }
+    }
+    return items;
   }
 }

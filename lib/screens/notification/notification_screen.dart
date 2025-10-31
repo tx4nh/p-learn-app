@@ -17,7 +17,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   @override
   void initState() {
     super.initState();
-    _scheduleFuture = _scheduleService.getMockSchedule();
+    _scheduleFuture = _scheduleService.getSchedule();
   }
 
   @override
