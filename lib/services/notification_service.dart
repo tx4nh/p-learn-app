@@ -63,7 +63,7 @@ class NotificationService {
           tz.TZDateTime.from(notificationTime, tz.local),
           const NotificationDetails(
             android: AndroidNotificationDetails(
-              'channel_id',
+              'channel_id', 
               'channel_name',
               channelDescription: 'channel_description',
               importance: Importance.max,
@@ -82,6 +82,38 @@ class NotificationService {
   Future<void> scheduleAllNotifications(List<ScheduleItem> schedule) async {
     for (var item in schedule) {
       await scheduleNotification(item);
+    }
+  }
+
+  Future<void> showNowTestNotification() async {
+    print("Attempting to show test notification...");
+    try {
+      const NotificationDetails platformDetails = NotificationDetails(
+        android: AndroidNotificationDetails(
+          'channel_id', 
+          'channel_name', 
+          channelDescription: 'channel_description',
+          importance: Importance.max,
+          priority: Priority.high,
+          ticker: 'ticker',
+        ),
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        ),
+      );
+
+      await flutterLocalNotificationsPlugin.show(
+        999,
+        'Thông báo Test 🚨', // Tiêu đề
+        'Nếu bạn thấy thông báo này, nghĩa là nó hoạt động!', 
+        platformDetails,
+        payload: 'test_payload',
+      );
+      print("Test notification shown successfully.");
+    } catch (e) {
+      print("Error showing test notification: $e");
     }
   }
 }
