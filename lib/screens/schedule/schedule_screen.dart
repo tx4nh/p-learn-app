@@ -50,10 +50,6 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // ... (Phần còn lại của file build() giữ nguyên y hệt)
-    // ...
-    // Toàn bộ phần còn lại của file này không cần thay đổi gì
-    // ...
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -88,6 +84,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Lỗi: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            print(_scheduleFuture);
             return const Center(child: Text('Không có lịch học.'));
           }
 
@@ -95,7 +92,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           final sortedDates = groupedSchedule.keys.toList()..sort();
 
           // Schedule notifications
-          NotificationService().scheduleAllNotifications(snapshot.data!);
+          // NotificationService().scheduleAllNotifications(snapshot.data!);
 
           // Generate keys for each date
           _dateKeys.clear(); // Xóa key cũ đi mỗi lần build lại

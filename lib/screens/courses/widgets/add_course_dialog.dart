@@ -101,6 +101,8 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
       
       widget.addCourse(courseData);
 
+      print(courseData);
+
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Vui lòng điền đầy đủ tất cả các trường')),

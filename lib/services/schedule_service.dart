@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/schedule_model.dart';
 import '../models/course_model.dart';
-import '../api/endpoints.dart'; // Giả sử bạn có file này
+import '../api/endpoints.dart';
 
 class ScheduleService {
   Future<List<ScheduleItem>> getSchedule() async {
@@ -16,7 +16,6 @@ class ScheduleService {
     }
 
     try {
-      // 1. Lấy danh sách tất cả các môn học (subjects)
       final subjectsResponse = await http.get(
         Uri.parse(Endpoints.getAllSubjects),
         headers: {
@@ -34,42 +33,13 @@ class ScheduleService {
       final List<dynamic> subjectsData = json.decode(
         utf8.decode(subjectsResponse.bodyBytes),
       );
-      final List<Course> coursesWithSchedules = [];
 
-      // 2. Với mỗi môn học, lấy lịch học chi tiết của nó
-      for (var subjectJson in subjectsData) {
-        // Đảm bảo subjectJson và id của nó không null
-        if (subjectJson == null || subjectJson['id'] == null) continue;
-        final String subjectId = subjectJson['id'].toString();
+      print('[DEBUG SERVICE] Nhận được ${subjectsData.length} môn học từ API.');
 
-        final scheduleResponse = await http.get(
-          Uri.parse(Endpoints.getAllSchedules(subjectId)),
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        );
-
-        if (scheduleResponse.statusCode == 200) {
-          final List<dynamic> scheduleData = json.decode(
-            utf8.decode(scheduleResponse.bodyBytes),
-          );
-
-          // 3. Gắn lịch học (schedules) vào đúng môn học của nó
-          final courseJson = Map<String, dynamic>.from(subjectJson);
-          courseJson['schedules'] = scheduleData;
-
-          // 4. Parse thành đối tượng Course hoàn chỉnh
-          coursesWithSchedules.add(Course.fromJson(courseJson));
-        } else {
-          print(
-            'Warning: Failed to load schedule for subject $subjectId. Status: ${scheduleResponse.statusCode}',
-          );
-        }
-      }
-
-      // 5. Xử lý và chuyển đổi thành các mục lịch học để hiển thị
-      return _processCoursesIntoScheduleItems(coursesWithSchedules);
+      final List<Course> courses = subjectsData
+          .map((json) => Course.fromJson(json))
+          .toList();
+      return _processCoursesIntoScheduleItems(courses);
     } catch (e) {
       print('Error fetching schedule: $e');
       rethrow;
@@ -79,8 +49,7 @@ class ScheduleService {
   List<ScheduleItem> _processCoursesIntoScheduleItems(List<Course> courses) {
     final List<ScheduleItem> items = [];
 
-    // Xóa dòng này, nó không còn cần thiết
-    // final DateFormat timeFormatter = DateFormat('HH:mm');
+    print('[DEBUG] Bắt đầu xử lý ${courses.length} courses.');
 
     final Map<int, int> apiToDartWeekday = {
       0: 7,
@@ -93,9 +62,22 @@ class ScheduleService {
     };
 
     for (final course in courses) {
+      print('[DEBUG] Đang xử lý course: ${course.fullName}');
+      print('[DEBUG] ... Dữ liệu StartDate: "${course.startDate}"');
+      print('[DEBUG] ... Dữ liệu EndDate: "${course.endDate}"');
+      print(
+        '[DEBUG] ... Môn này có ${course.schedule.length} lịch học chi tiết (rules).',
+      );
+
+      if (course.schedule.isEmpty) {
+        print('[DEBUG] ... BỎ QUA vì course.schedule bị rỗng.');
+        continue;
+      }
+
       try {
         DateTime courseStartDate = DateTime.parse(course.startDate);
         DateTime courseEndDate = DateTime.parse(course.endDate);
+        print('[DEBUG] ... Parse Date thành công.');
 
         DateTime currentDate = courseStartDate;
         while (currentDate.isBefore(courseEndDate) ||
@@ -104,13 +86,15 @@ class ScheduleService {
             int? dartWeekday = apiToDartWeekday[rule.dayOfWeek];
 
             if (dartWeekday != null && currentDate.weekday == dartWeekday) {
-              // === SỬA LỖI Ở ĐÂY ===
+              print(
+                '[DEBUG] ... === KHỚP NGÀY! === (API day: ${rule.dayOfWeek} == Dart day: ${currentDate.weekday})',
+              );
+              print('[DEBUG] ...... Dữ liệu StartTime: "${rule.startTime}"');
+
               try {
-                // Giả sử API trả về "15:34:00"
-                // Lấy 5 ký tự đầu tiên: "15:34"
                 final startTime = rule.startTime.substring(0, 5);
                 final endTime = rule.endTime.substring(0, 5);
-                final timeString = '$startTime - $endTime'; // "15:34 - 17:34"
+                final timeString = '$startTime - $endTime';
 
                 items.add(
                   ScheduleItem(
@@ -118,25 +102,27 @@ class ScheduleService {
                     subject: course.fullName,
                     room: rule.room,
                     date: currentDate,
-                    time: timeString, // Gán chuỗi đã format
+                    time: timeString,
                   ),
                 );
+                print('[DEBUG] ...... THÊM LỊCH HỌC THÀNH CÔNG!');
               } catch (e) {
                 print(
-                  'Error parsing time string: ${rule.startTime}. Error: $e',
+                  '[LỖI PARSE TIME] Không thể parse time: "${rule.startTime}". Lỗi: $e',
                 );
               }
-              // ===================
             }
           }
           currentDate = currentDate.add(const Duration(days: 1));
         }
       } catch (e) {
         print(
-          'Error parsing date: ${course.startDate} or ${course.endDate}. Error: $e',
+          '[LỖI PARSE DATE] Không thể parse date: "${course.startDate}" hoặc "${course.endDate}". Lỗi: $e',
         );
       }
     }
+
+    print('[DEBUG] Xử lý xong. Tổng số items tìm được: ${items.length}');
     return items;
   }
 }

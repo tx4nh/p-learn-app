@@ -31,7 +31,6 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadSchedule();
   }
 
-  // TODO: Gọi API thật ở đây
   Future<void> _loadSchedule() async {
     setState(() {
       _isLoading = true;
