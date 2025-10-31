@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:p_learn_app/screens/tools/exam_bank_subjects_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomeBanners extends StatelessWidget {
@@ -57,11 +58,11 @@ class HomeBanners extends StatelessWidget {
               title: 'Ngân hàng đề thi',
               icon: Icons.assignment,
               color: Colors.red.shade700,
-              onTap: () async {
-                final Uri url = Uri.parse('https://qldt.ptit.edu.vn/#/home');
-                if (!await launchUrl(url)) {
-                  throw Exception('Could not launch $url');
-                }
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ExamBankSubjectsScreen()),
+                );
               },
             ),
             _buildBannerCard(

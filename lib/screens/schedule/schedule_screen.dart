@@ -5,7 +5,6 @@ import 'package:p_learn_app/models/schedule_model.dart';
 import 'package:p_learn_app/services/schedule_service.dart';
 import 'package:p_learn_app/widgets/app_colors.dart';
 import 'package:p_learn_app/screens/notification/notification_screen.dart';
-import 'package:p_learn_app/services/notification_service.dart';
 
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
@@ -91,11 +90,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           final groupedSchedule = _groupScheduleByDate(snapshot.data!);
           final sortedDates = groupedSchedule.keys.toList()..sort();
 
-          // Schedule notifications
-          // NotificationService().scheduleAllNotifications(snapshot.data!);
-
           // Generate keys for each date
-          _dateKeys.clear(); // Xóa key cũ đi mỗi lần build lại
+          _dateKeys.clear(); 
           for (var date in sortedDates) {
             _dateKeys.putIfAbsent(date, () => GlobalKey());
           }
@@ -142,7 +138,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
   Widget _buildWeekView(Map<DateTime, List<ScheduleItem>> groupedSchedule) {
     final today = DateTime.now();
-    final startOfWeek = today.subtract(Duration(days: today.weekday - 1)); // Giả sử tuần bắt đầu T2 (weekday = 1)
+    final startOfWeek = today.subtract(Duration(days: today.weekday - 1));
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
@@ -177,7 +173,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             child: Column(
               children: [
                 Text(
-                  DateFormat('E', 'vi_VN').format(day).substring(0, 2), // "T2", "T3", ...
+                  DateFormat('E', 'vi_VN').format(day).substring(0, 2),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: isSelected ? Colors.red : Colors.grey[600],
@@ -203,7 +199,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     ),
                   )
                 else
-                  const SizedBox(height: 6), // Thêm để giữ layout ổn định
+                  const SizedBox(height: 6), 
               ],
             ),
           );
