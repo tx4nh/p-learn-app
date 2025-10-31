@@ -227,7 +227,7 @@ class _GpaCalculatorScreenState extends State<GpaCalculatorScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddCourseDialog,
-        backgroundColor: Colors.red, // Set FAB background to red
+        backgroundColor: Colors.red, 
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );

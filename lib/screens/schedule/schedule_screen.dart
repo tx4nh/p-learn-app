@@ -1,4 +1,4 @@
-// screens/schedule_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:p_learn_app/models/schedule_model.dart';
@@ -83,14 +83,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Lỗi: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            print(_scheduleFuture);
             return const Center(child: Text('Không có lịch học.'));
           }
 
           final groupedSchedule = _groupScheduleByDate(snapshot.data!);
           final sortedDates = groupedSchedule.keys.toList()..sort();
 
-          // Generate keys for each date
           _dateKeys.clear(); 
           for (var date in sortedDates) {
             _dateKeys.putIfAbsent(date, () => GlobalKey());
@@ -108,7 +106,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     final date = sortedDates[index];
                     final items = groupedSchedule[date]!;
                     return Column(
-                      key: _dateKeys[date], // Gán key
+                      key: _dateKeys[date], 
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(

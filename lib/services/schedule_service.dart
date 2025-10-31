@@ -11,7 +11,6 @@ class ScheduleService {
     final token = prefs.getString('access_token');
 
     if (token == null || token.isEmpty) {
-      print('Error fetching schedule: Token is missing or empty.');
       throw Exception('Not authenticated. Token is missing.');
     }
 
@@ -34,14 +33,14 @@ class ScheduleService {
         utf8.decode(subjectsResponse.bodyBytes),
       );
 
-      print('[DEBUG SERVICE] Nhận được ${subjectsData.length} môn học từ API.');
+     
 
       final List<Course> courses = subjectsData
           .map((json) => Course.fromJson(json))
           .toList();
       return _processCoursesIntoScheduleItems(courses);
     } catch (e) {
-      print('Error fetching schedule: $e');
+
       rethrow;
     }
   }
@@ -49,7 +48,7 @@ class ScheduleService {
   List<ScheduleItem> _processCoursesIntoScheduleItems(List<Course> courses) {
     final List<ScheduleItem> items = [];
 
-    print('[DEBUG] Bắt đầu xử lý ${courses.length} courses.');
+   
 
     final Map<int, int> apiToDartWeekday = {
       0: 7,
@@ -62,22 +61,17 @@ class ScheduleService {
     };
 
     for (final course in courses) {
-      print('[DEBUG] Đang xử lý course: ${course.fullName}');
-      print('[DEBUG] ... Dữ liệu StartDate: "${course.startDate}"');
-      print('[DEBUG] ... Dữ liệu EndDate: "${course.endDate}"');
-      print(
-        '[DEBUG] ... Môn này có ${course.schedule.length} lịch học chi tiết (rules).',
-      );
+    
 
       if (course.schedule.isEmpty) {
-        print('[DEBUG] ... BỎ QUA vì course.schedule bị rỗng.');
+      
         continue;
       }
 
       try {
         DateTime courseStartDate = DateTime.parse(course.startDate);
         DateTime courseEndDate = DateTime.parse(course.endDate);
-        print('[DEBUG] ... Parse Date thành công.');
+       
 
         DateTime currentDate = courseStartDate;
         while (currentDate.isBefore(courseEndDate) ||
@@ -86,11 +80,7 @@ class ScheduleService {
             int? dartWeekday = apiToDartWeekday[rule.dayOfWeek];
 
             if (dartWeekday != null && currentDate.weekday == dartWeekday) {
-              print(
-                '[DEBUG] ... === KHỚP NGÀY! === (API day: ${rule.dayOfWeek} == Dart day: ${currentDate.weekday})',
-              );
-              print('[DEBUG] ...... Dữ liệu StartTime: "${rule.startTime}"');
-
+             
               try {
                 final startTime = rule.startTime.substring(0, 5);
                 final endTime = rule.endTime.substring(0, 5);
@@ -105,24 +95,19 @@ class ScheduleService {
                     time: timeString,
                   ),
                 );
-                print('[DEBUG] ...... THÊM LỊCH HỌC THÀNH CÔNG!');
+                
               } catch (e) {
-                print(
-                  '[LỖI PARSE TIME] Không thể parse time: "${rule.startTime}". Lỗi: $e',
-                );
+                // Handle time parsing errors
               }
             }
           }
           currentDate = currentDate.add(const Duration(days: 1));
         }
       } catch (e) {
-        print(
-          '[LỖI PARSE DATE] Không thể parse date: "${course.startDate}" hoặc "${course.endDate}". Lỗi: $e',
-        );
+        // Handle date parsing errors
       }
     }
 
-    print('[DEBUG] Xử lý xong. Tổng số items tìm được: ${items.length}');
     return items;
   }
 }

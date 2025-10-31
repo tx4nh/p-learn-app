@@ -66,7 +66,7 @@ class _AssignmentListScreenState extends State<AssignmentListScreen> {
     final headers = await _getAuthHeaders();
     final body = jsonEncode({
       'title': title,
-      'dueDate': dueDate.toIso8601String(), // Gửi theo định dạng ISO
+      'dueDate': dueDate.toIso8601String(),
     });
 
     try {
@@ -78,7 +78,6 @@ class _AssignmentListScreenState extends State<AssignmentListScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Đã thêm bài tập thành công')),
         );
-        // Tải lại danh sách
         setState(() {
           _assignmentsFuture = _fetchAssignments();
         });
@@ -107,11 +106,10 @@ class _AssignmentListScreenState extends State<AssignmentListScreen> {
 
       if (response.statusCode == 200) {
         if (!mounted) return;
-        Navigator.pop(context); // Đóng dialog
+        Navigator.pop(context); 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Đã cập nhật bài tập thành công')),
         );
-        // Tải lại danh sách
         setState(() {
           _assignmentsFuture = _fetchAssignments();
         });
@@ -136,7 +134,7 @@ class _AssignmentListScreenState extends State<AssignmentListScreen> {
 
       if (response.statusCode == 200 || response.statusCode == 204) {
         if (!mounted) return;
-        Navigator.pop(context); // Đóng dialog
+        Navigator.pop(context); 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Đã xóa bài tập thành công')),
         );
@@ -157,7 +155,6 @@ class _AssignmentListScreenState extends State<AssignmentListScreen> {
   }
 
 
-  // === CÁC HÀM TRỢ GIÚP HIỂN THỊ ===
 
   String _getDueDateInfo(DateTime dueDate) {
     final now = DateTime.now();
@@ -189,7 +186,7 @@ class _AssignmentListScreenState extends State<AssignmentListScreen> {
     }
   }
 
-  // === CÁC HÀM DIALOG & BOTTOM SHEET MỚI ===
+
 
   void _showAddAssignmentDialog() {
     final formKey = GlobalKey<FormState>();
@@ -199,7 +196,6 @@ class _AssignmentListScreenState extends State<AssignmentListScreen> {
     showDialog(
       context: context,
       builder: (context) {
-        // Dùng StatefulBuilder để cập nhật ngày đã chọn
         return StatefulBuilder(
           builder: (context, setStateInDialog) {
             return AlertDialog(
@@ -386,7 +382,7 @@ class _AssignmentListScreenState extends State<AssignmentListScreen> {
               leading: const Icon(Icons.edit, color: Colors.blue),
               title: const Text('Chỉnh sửa'),
               onTap: () {
-                Navigator.pop(context); // Đóng bottom sheet
+                Navigator.pop(context); 
                 _showEditAssignmentDialog(assignment);
 _showEditAssignmentDialog(assignment);
               },
@@ -395,7 +391,7 @@ _showEditAssignmentDialog(assignment);
               leading: const Icon(Icons.delete, color: Colors.red),
               title: const Text('Xóa'),
               onTap: () {
-                Navigator.pop(context); // Đóng bottom sheet
+                Navigator.pop(context); 
                 _showDeleteConfirmDialog(assignment);
               },
             ),
@@ -498,7 +494,6 @@ _showEditAssignmentDialog(assignment);
               final dueDateInfo = _getDueDateInfo(assignment.dueDate);
               final dueDateColor = _getDueDateColor(assignment.dueDate);
 
-              // Bọc ListTile trong Container để thêm onLongPress
               return Container(
                 margin: const EdgeInsets.only(bottom: 16.0),
                 decoration: BoxDecoration(
@@ -513,7 +508,7 @@ _showEditAssignmentDialog(assignment);
                     ),
                   ],
                 ),
-                child: InkWell( // Dùng InkWell để có hiệu ứng ripple
+                child: InkWell(
                   onLongPress: () {
                     _showAssignmentOptions(assignment);
                   },
@@ -539,7 +534,6 @@ _showEditAssignmentDialog(assignment);
           );
         },
       ),
-      // THÊM FLOATING ACTION BUTTON
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddAssignmentDialog,
         backgroundColor: Colors.red,

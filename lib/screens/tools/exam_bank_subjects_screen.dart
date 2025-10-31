@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:math'; // For Random
+import 'dart:math'; 
 import 'exam_photos_screen.dart';
 
 class ExamBankSubjectsScreen extends StatefulWidget {
@@ -10,7 +10,6 @@ class ExamBankSubjectsScreen extends StatefulWidget {
 }
 
 class _ExamBankSubjectsScreenState extends State<ExamBankSubjectsScreen> {
-  // Dummy data for subjects
   final List<String> _subjects = const [
     'Giải tích 1',
     'Đại số tuyến tính',
@@ -45,8 +44,6 @@ class _ExamBankSubjectsScreenState extends State<ExamBankSubjectsScreen> {
     final random = Random();
     final shuffledImages = List<String>.from(_allImages)..shuffle(random);
     
-    // Since we have 8 images and 8 subjects, we assign one to each.
-    // If there were more images, we could assign more.
     _subjectImages = List.generate(_subjects.length, (index) {
       if (shuffledImages.isNotEmpty) {
         return [shuffledImages.removeAt(0)];

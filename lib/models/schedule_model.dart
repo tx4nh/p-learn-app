@@ -13,7 +13,6 @@ class ScheduleItem {
     required this.date,
   });
 
-  // Parse từ JSON API
   factory ScheduleItem.fromJson(Map<String, dynamic> json) {
     return ScheduleItem(
       id: json['id'] ?? '',

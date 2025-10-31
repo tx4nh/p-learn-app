@@ -11,7 +11,6 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  // --- KHAI BÁO STATE ---
   final _formKey = GlobalKey<FormState>();
   final _studentIdController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -30,17 +29,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     'DCQT': 'Quản Trị Kinh Doanh',
   };
 
-  // --- LOGIC XỬ LÝ ---
   @override
   void initState() {
     super.initState();
-    // SỬA 1: Sử dụng đúng tên controller
     _studentIdController.addListener(_updateMajor);
   }
 
   @override
   void dispose() {
-    // SỬA 1: Sử dụng đúng tên controller và dispose tất cả
     _studentIdController.removeListener(_updateMajor);
     _studentIdController.dispose();
     _passwordController.dispose();
@@ -51,7 +47,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void _updateMajor() {
-    // SỬA 1: Sử dụng đúng tên controller
     String studentId = _studentIdController.text.toUpperCase();
 
     if (studentId.length >= 8) {
@@ -70,31 +65,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _handleRegister() async {
-    // Logic đăng ký của bạn đã tốt, giữ nguyên
-    print('🚀 [REGISTER] Hàm _handleRegister được gọi.');
-    if (_formKey.currentState!.validate()) {
-      print('✅ [REGISTER] Form validation thành công.');
 
-      // Không cần kiểm tra mật khẩu ở đây nữa vì validator đã làm
+    if (_formKey.currentState!.validate()) {
 
       setState(() {
         _isLoading = true;
       });
 
       try {
-        print('⏳ [REGISTER] Chuẩn bị gọi authService.register()...');
+       
         final authService = Provider.of<AuthService>(context, listen: false);
         final success = await authService.register(
           _studentIdController.text.trim(),
-          _recoveryEmailController.text.trim(), // THÊM: Gửi email
+          _recoveryEmailController.text.trim(), 
           _passwordController.text,
         );
-        print(
-          '💬 [REGISTER] authService.register() đã hoàn thành. Kết quả: success = $success',
-        );
+       
 
         if (success && mounted) {
-          print('🎉 [REGISTER] Đăng ký thành công!');
+         
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text(
@@ -103,12 +92,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
               backgroundColor: Colors.green,
             ),
           );
-          // Điều hướng về màn hình đăng nhập
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => const LoginScreen()),
           );
         } else if (mounted) {
-          print('❌ [REGISTER] Đăng ký thất bại.');
+          
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text(
@@ -119,7 +107,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
           );
         }
       } catch (e) {
-        print('🔥 [REGISTER] ĐÃ CÓ LỖI XẢY RA! Lỗi: ${e.toString()}');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -129,7 +116,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           );
         }
       } finally {
-        print('🧹 [REGISTER] Khối finally được thực thi.');
+       
         if (mounted) {
           setState(() {
             _isLoading = false;
@@ -137,22 +124,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
         }
       }
     } else {
-      print('📝 [REGISTER] Form validation thất bại.');
     }
   }
 
-  // --- GIAO DIỆN (UI) ---
-  // TÁI CẤU TRÚC: Hàm build bây giờ rất gọn gàng
   @override
 Widget build(BuildContext context) {
   return Scaffold(
     backgroundColor: Colors.white,
     body: SafeArea(
-      // SỬA LỖI: Bọc toàn bộ nội dung trong Center
+     
       child: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
-          // Bỏ LayoutBuilder và ConstrainedBox, Column sẽ tự co lại và được Center căn giữa
+        
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -167,7 +151,6 @@ Widget build(BuildContext context) {
   );
 }
 
-  // TÁI CẤU TRÚC: Tách phần Header ra một hàm riêng
   Widget _buildHeader() {
     return Column(
       children: [
@@ -199,9 +182,7 @@ Widget build(BuildContext context) {
     );
   }
 
-  // TÁI CẤU TRÚC: Tách toàn bộ Form ra một hàm riêng
   Widget _buildRegisterForm() {
-    // Thêm hiệu ứng animation cho các trường trong form
     return Form(
       key: _formKey,
       child: Column(
@@ -282,7 +263,7 @@ Widget build(BuildContext context) {
             decoration: _buildInputDecoration(
               labelText: 'Ngành học của bạn',
               prefixIcon: Icons.school_outlined,
-              isReadOnly: true, // Thêm cờ để nhận biết trường chỉ đọc
+              isReadOnly: true, 
             ),
           ),
           const SizedBox(height: 32),
@@ -338,20 +319,20 @@ Widget build(BuildContext context) {
     );
   }
 
-  // TÁI CẤU TRÚC: Cải thiện hàm helper
+
   InputDecoration _buildInputDecoration({
     required String labelText,
-    String? hintText, // hintText có thể null
+    String? hintText, 
     required IconData prefixIcon,
     Widget? suffixIcon,
-    bool isReadOnly = false, // Thêm cờ cho trường chỉ đọc
+    bool isReadOnly = false, 
   }) {
     return InputDecoration(
       labelText: labelText,
       hintText: hintText,
       prefixIcon: Icon(prefixIcon, color: Colors.grey.shade600),
       suffixIcon: suffixIcon,
-      filled: isReadOnly, // Chỉ tô màu nền khi isReadOnly
+      filled: isReadOnly,
       fillColor: Colors.grey.shade100,
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       enabledBorder: OutlineInputBorder(
@@ -365,5 +346,4 @@ Widget build(BuildContext context) {
     );
   }
 
-  // TÁI CẤU TRÚC: Helper method để tạo InputDecoration
 }

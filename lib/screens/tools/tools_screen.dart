@@ -18,8 +18,6 @@ class ToolsScreen extends StatelessWidget {
         backgroundColor: Colors.red,
         foregroundColor: Colors.white,
       ),
-      // Bọc Column bằng SingleChildScrollView để tránh lỗi tràn pixel
-      // khi thêm nhiều thẻ
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -66,22 +64,21 @@ class ToolsScreen extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 16),
-              // --- THẺ MỚI CHO TÍNH NĂNG CHATBOT ---
+              
               _buildToolCard(
                 context,
-                icon: Icons.chat_bubble_outline, // Icon cho chatbot
+                icon: Icons.chat_bubble_outline, 
                 title: 'Chatbot hỗ trợ',
                 subtitle: 'Trò chuyện với trợ lý ảo học tập.',
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const ChatbotScreen(), // Tên màn hình chatbot của bạn
+                      builder: (context) => const ChatbotScreen(), 
                     ),
                   );
                 },
               ),
-              // --- KẾT THÚC THẺ MỚI ---
             ],
           ),
         ),

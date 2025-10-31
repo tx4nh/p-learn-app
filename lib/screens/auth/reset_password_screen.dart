@@ -1,8 +1,7 @@
-// lib/screens/auth/reset_password_screen.dart
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../services/auth_service.dart'; // Đảm bảo đường dẫn này đúng
+import '../../services/auth_service.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({super.key});
@@ -18,7 +17,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   bool _isPasswordVisible = false;
   bool _isLoading = false;
   
-  // Lấy màu từ LoginScreen cho nhất quán
   final _colorLogin = const Color.fromARGB(184, 244, 12, 12); 
 
   @override
@@ -29,37 +27,31 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   }
 
   Future<void> _handleResetPassword() async {
-    print('🚀 [RESET_PW] Hàm _handleResetPassword được gọi.');
+   
     if (_formKey.currentState!.validate()) {
-      print('✅ [RESET_PW] Form validation thành công.');
+      
       setState(() {
         _isLoading = true;
       });
 
       try {
         final authService = Provider.of<AuthService>(context, listen: false);
-        print('⏳ [RESET_PW] Chuẩn bị gọi authService.resetPassword()...');
-        
-        // Gọi phương thức mới trong AuthService (sẽ thêm ở bước 2)
         final message = await authService.resetPassword(
           _emailController.text.trim(),
           _newPasswordController.text,
         );
-
-        print('🎉 [RESET_PW] Đặt lại mật khẩu thành công! Message: $message');
-
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(message), // Hiển thị thông báo thành công từ API
+              content: Text(message), 
               backgroundColor: Colors.green,
             ),
           );
-          Navigator.pop(context); // Quay lại màn hình Đăng nhập
+          Navigator.pop(context); 
         }
 
       } catch (e) {
-        print('🔥 [RESET_PW] ĐÃ CÓ LỖI XẢY RA! Lỗi: ${e.toString()}');
+      
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -69,7 +61,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           );
         }
       } finally {
-        print('🧹 [RESET_PW] Khối finally được thực thi. Tắt loading.');
+       
         if (mounted) {
           setState(() {
             _isLoading = false;
@@ -77,7 +69,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         }
       }
     } else {
-        print('📝 [RESET_PW] Form validation thất bại.');
+        
     }
   }
 
@@ -108,7 +100,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 ),
                 const SizedBox(height: 48),
 
-                // Trường Email
+              
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -141,7 +133,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
                 const SizedBox(height: 16),
 
-                // Trường Mật khẩu mới
+                
                 TextFormField(
                   controller: _newPasswordController,
                   obscureText: !_isPasswordVisible,
@@ -186,7 +178,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
                 const SizedBox(height: 40),
 
-                // Nút Gửi
+                
                 ElevatedButton(
                   onPressed: _isLoading ? null : _handleResetPassword,
                   style: ElevatedButton.styleFrom(

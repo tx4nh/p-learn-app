@@ -75,7 +75,6 @@ class NotificationService {
         );
       }
     } catch (e) {
-      print('Error scheduling notification: $e');
     }
   }
 
@@ -86,7 +85,7 @@ class NotificationService {
   }
 
   Future<void> showNowTestNotification() async {
-    print("Attempting to show test notification...");
+   
     try {
       const NotificationDetails platformDetails = NotificationDetails(
         android: AndroidNotificationDetails(
@@ -106,14 +105,14 @@ class NotificationService {
 
       await flutterLocalNotificationsPlugin.show(
         999,
-        'Thông báo Test 🚨', // Tiêu đề
+        'Thông báo Test 🚨', 
         'Nếu bạn thấy thông báo này, nghĩa là nó hoạt động!', 
         platformDetails,
         payload: 'test_payload',
       );
-      print("Test notification shown successfully.");
+     
     } catch (e) {
-      print("Error showing test notification: $e");
+      //
     }
   }
 }

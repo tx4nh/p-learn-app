@@ -27,7 +27,7 @@ class HomeBanners extends StatelessWidget {
           crossAxisCount: 2,
           crossAxisSpacing: 16.0,
           mainAxisSpacing: 16.0,
-          childAspectRatio: 1.8, // Adjust as needed for desired banner size
+          childAspectRatio: 1.8, 
           children: [
             _buildBannerCard(
               context,

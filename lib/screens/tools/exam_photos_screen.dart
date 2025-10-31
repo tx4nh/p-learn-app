@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'full_screen_image_viewer.dart'; // Added import
+import 'full_screen_image_viewer.dart'; 
 
 class ExamPhotosScreen extends StatelessWidget {
   final String subject;
@@ -28,8 +28,7 @@ class ExamPhotosScreen extends StatelessWidget {
           : GridView.builder(
               padding: const EdgeInsets.all(10.0),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, // 2 images per row
-                crossAxisSpacing: 10.0,
+                crossAxisCount: 2, 
                 mainAxisSpacing: 10.0,
               ),
               itemCount: examImageUrls.length,
@@ -37,7 +36,7 @@ class ExamPhotosScreen extends StatelessWidget {
                 final imagePath = examImageUrls[index];
                 return Card(
                   clipBehavior: Clip.antiAlias,
-                  child: InkWell( // Wrapped with InkWell for tap feedback
+                  child: InkWell( 
                     onTap: () {
                       Navigator.push(
                         context,

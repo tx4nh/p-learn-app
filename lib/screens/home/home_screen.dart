@@ -73,7 +73,6 @@ class _HomeScreenState extends State<HomeScreen> {
         return ClassStatus.ongoing;
       }
     } catch (e) {
-      debugPrint('Error parsing time: ${item.time} - $e');
       return ClassStatus.upcoming;
     }
   }

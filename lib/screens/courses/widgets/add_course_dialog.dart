@@ -101,7 +101,6 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
       
       widget.addCourse(courseData);
 
-      print(courseData);
 
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
