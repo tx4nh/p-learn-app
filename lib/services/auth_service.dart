@@ -1,19 +1,21 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-// 1. THÊM IMPORT CHO SHAREDPREFS
 import 'package:shared_preferences/shared_preferences.dart'; 
 import '../api/endpoints.dart';
 
 class AuthService with ChangeNotifier {
-  String? _username; // <-- Đổi tên từ _userEmail sang _username cho rõ nghĩa
+  String? _username;
+  String? _email;
   bool _isLoggedIn = false;
 
   bool get isLoggedIn => _isLoggedIn;
-  String? get currentUsername => _username; // <-- Đổi tên
+  String? get currentUsername => _username; 
+  String? get currentEmail => _email;
 
-  Future<bool> login(String username, String password) async { // <-- Đổi tên
+  Future<bool> login(String username, String password) async {
     print('📡 [AuthService] Đang gửi yêu cầu đăng nhập đến: ${Endpoints.login}');
     print('   => Body: ${jsonEncode({'username': username, 'password': password})}');
 
@@ -34,30 +36,33 @@ class AuthService with ChangeNotifier {
         try {
           final responseData = jsonDecode(response.body);
 
-          // Kiểm tra kỹ cấu trúc JSON
           if (responseData.containsKey('token') && 
               responseData['token'] is Map &&
               responseData['token'].containsKey('access_token') &&
               responseData.containsKey('user') &&
               responseData['user'] is Map &&
-              responseData['user'].containsKey('username')) {
+              responseData['user'].containsKey('username') &&
+              responseData['user'].containsKey('email')) { 
 
             final String accessToken = responseData['token']['access_token'];
             final String serverUsername = responseData['user']['username'];
+            final String serverEmail = responseData['user']['email'];
 
             final prefs = await SharedPreferences.getInstance();
             await prefs.setString('access_token', accessToken);
             await prefs.setString('username', serverUsername);
+            await prefs.setString('email', serverEmail);
             
-            print('💾 [AuthService] Đã LƯU token và username vào SharedPreferences!');
+            print('💾 [AuthService] Đã LƯU token, username, và email vào SharedPreferences!');
             
             _isLoggedIn = true;
             _username = serverUsername;
+            _email = serverEmail;
             notifyListeners();
             return true;
           } else {
             print('❌ [AuthService] Lỗi: Cấu trúc JSON trả về không đúng định dạng.');
-            print('   => Expected: {"token": {"access_token": "..." }, "user": {"username": "..."}}');
+            print('   => Expected: {"token": ..., "user": {"username": "...", "email": "..."}}');
             print('   => Received: ${response.body}');
             return false;
           }
@@ -77,7 +82,6 @@ class AuthService with ChangeNotifier {
   }
 
   Future<bool> register(String username, String email, String password) async {
-    // ... (Hàm register của bạn giữ nguyên, không cần sửa) ...
     print('📡 [REGISTER] Đang gửi yêu cầu đăng ký đến: ${Endpoints.register}');
     print('   => Body: ${jsonEncode({
           'username': username,
@@ -114,7 +118,7 @@ class AuthService with ChangeNotifier {
   }
 
   Future<String> resetPassword(String email, String newPassword) async {
-    print('📡 [AuthService] [RESET_PW] Đang gửi yêu cầu đến: ${Endpoints.resetPassword}');
+        print('📡 [AuthService] [RESET_PW] Đang gửi yêu cầu đến: ${Endpoints.resetPassword}');
     
     final url = Uri.parse(Endpoints.resetPassword);
     
@@ -139,14 +143,11 @@ class AuthService with ChangeNotifier {
       print('📦 [AuthService] [RESET_PW] Response Body: $responseBody');
 
       if (response.statusCode == 200) {
-        // API trả về string, ví dụ: "Password reset successful"
         print('✅ [AuthService] [RESET_PW] Đặt lại mật khẩu thành công.');
         return responseBody.toString(); 
       } else if (response.statusCode == 422) {
-        // Lỗi validation (Dựa trên ảnh của bạn)
         print('❌ [AuthService] [RESET_PW] Lỗi Validation (422).');
         String errorMessage = 'Dữ liệu không hợp lệ';
-        // Thử trích xuất lỗi chi tiết nếu API trả về
         if (responseBody is Map && responseBody.containsKey('detail')) {
           errorMessage = responseBody['detail'];
         }
@@ -158,36 +159,37 @@ class AuthService with ChangeNotifier {
       }
     } catch (e) {
       print('🔥 [AuthService] [RESET_PW] Lỗi khi gọi resetPassword: ${e.toString()}');
-      // Ném lại lỗi để UI (ResetPasswordScreen) có thể bắt được
       throw Exception('Không thể kết nối. ${e.toString()}');
     }
   }
-  // 5. CẬP NHẬT HÀM LOGOUT
+
   void logout() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('access_token'); // <-- Xóa token
-    await prefs.remove('username'); // <-- Xóa user
+    await prefs.remove('access_token'); 
+    await prefs.remove('username');
+    await prefs.remove('email');
 
     _isLoggedIn = false;
     _username = null;
-    print('🚪 [AuthService] Đã logout và xóa token.');
+    _email = null;
+    print('🚪 [AuthService] Đã logout và xóa token, username, email.');
     notifyListeners();
   }
 
-  // 6. CẬP NHẬT HÀM KIỂM TRA AUTH
   Future<void> checkAuthStatus() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('access_token');
 
     if (token != null) {
-      // Nếu có token, coi như đã đăng nhập
       _isLoggedIn = true;
-      _username = prefs.getString('username'); // <-- Lấy lại username
+      _username = prefs.getString('username');
+      _email = prefs.getString('email');
       print('🔄 [AuthService] Tự động đăng nhập với token: $token');
+      print('   => User: $_username, Email: $_email');
     } else {
       _isLoggedIn = false;
       print('🔄 [AuthService] Không tìm thấy token, yêu cầu đăng nhập.');
     }
-    notifyListeners(); // Thông báo cho app biết trạng thái auth
+    notifyListeners();
   }
 }

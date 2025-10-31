@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:p_learn_app/screens/auth/login_screen.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:p_learn_app/screens/auth/reset_password_screen.dart';
 import 'package:p_learn_app/services/notification_service.dart';
 import 'package:provider/provider.dart';
 import '../../services/auth_service.dart';
@@ -67,9 +68,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context, listen: false);
     final studentCode = authService.currentUsername ?? 'Không có mã';
+    
+    final username = authService.currentUsername;
+    String generatedName;
+
+    if (username != null && username.length >= 3) {
+      final lastThree = username.substring(username.length - 3);
+      generatedName = "PTITer $lastThree";
+    } else {
+      generatedName = "PtiterUser";
+    }
+
     final displayName = _displayNameController.text.isEmpty
-        ? studentCode.split('@').first
+        ? generatedName 
         : _displayNameController.text;
+
+    final emailDisplay = authService.currentEmail ?? "Chưa có email";
 
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
@@ -83,7 +97,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Header với avatar
             Container(
               width: double.infinity,
               decoration: BoxDecoration(color: Colors.red.shade600),
@@ -185,23 +198,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   _buildInfoTile(
                     icon: Icons.email_outlined,
                     title: 'Email lấy mật khẩu',
-                    subtitle: studentCode,
+                    subtitle: emailDisplay,
                   ),
                   const Divider(height: 1, indent: 72),
                   _buildActionTile(
                     icon: Icons.lock_outline,
                     title: 'Đổi mật khẩu',
                     onTap: () {
-                      // TODO: Điều hướng đến màn hình đổi mật khẩu
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ResetPasswordScreen(),
+                        ),
+                      );
                     },
                   ),
                   const Divider(height: 1, indent: 72),
                   _buildActionTile(
                     icon: Icons.help_outline,
                     title: 'Trợ giúp',
-                    onTap: () {
-                      // TODO: Điều hướng đến màn hình trợ giúp
-                    },
+                    onTap: () {},
                   ),
                   const Divider(height: 1, indent: 72),
                   _buildActionTile(
@@ -210,21 +226,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     onTap: () async {
                       final notificationService = NotificationService();
                       await notificationService.requestPermissions();
-                      await notificationService.flutterLocalNotificationsPlugin.show(
-                        0,
-                        'Thông báo kiểm tra',
-                        'Đây là một thông báo thử nghiệm từ P-Learn.',
-                        const NotificationDetails(
-                          android: AndroidNotificationDetails(
-                            'test_channel_id',
-                            'Test Channel',
-                            channelDescription: 'Channel for test notifications',
-                            importance: Importance.max,
-                            priority: Priority.high,
-                          ),
-                          iOS: DarwinNotificationDetails(),
-                        ),
-                      );
+                      await notificationService.flutterLocalNotificationsPlugin
+                          .show(
+                            0,
+                            'Thông báo kiểm tra',
+                            'Đây là một thông báo thử nghiệm từ P-Learn.',
+                            const NotificationDetails(
+                              android: AndroidNotificationDetails(
+                                'test_channel_id',
+                                'Test Channel',
+                                channelDescription:
+                                    'Channel for test notifications',
+                                importance: Importance.max,
+                                priority: Priority.high,
+                              ),
+                              iOS: DarwinNotificationDetails(),
+                            ),
+                          );
                     },
                   ),
                 ],
